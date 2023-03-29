@@ -1,0 +1,16 @@
+<RCC>
+    <qresource prefix="/">
+        <file>overlay/denasButtonless.svg</file>
+        <file>buttons/backButton.svg</file>
+        <file>buttons/downButton.svg</file>
+        <file>buttons/leftButton.svg</file>
+        <file>buttons/menuButton.svg</file>
+        <file>buttons/okButton.svg</file>
+        <file>buttons/powerButton.svg</file>
+        <file>buttons/rightButton.svg</file>
+        <file>buttons/upButton.svg</file>
+        <file>buttons/chargeButton.svg</file>
+        <file>icons/electrodeOff.svg</file>
+        <file>icons/electrodeOn.svg</file>
+    </qresource>
+</RCC>
