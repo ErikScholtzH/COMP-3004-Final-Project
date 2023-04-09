@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1282</width>
+    <width>451</width>
     <height>603</height>
    </rect>
   </property>
@@ -17,43 +17,29 @@
    <property name="enabled">
     <bool>true</bool>
    </property>
-   <property name="styleSheet">
-    <string notr="true">background-color: gray</string>
-   </property>
    <widget class="QWidget" name="Buttons" native="true">
     <property name="geometry">
      <rect>
-      <x>30</x>
-      <y>310</y>
-      <width>381</width>
-      <height>231</height>
+      <x>20</x>
+      <y>320</y>
+      <width>391</width>
+      <height>261</height>
      </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">background-color: white</string>
     </property>
     <widget class="QPushButton" name="UpButton">
      <property name="geometry">
       <rect>
        <x>180</x>
        <y>30</y>
-       <width>27</width>
-       <height>27</height>
+       <width>31</width>
+       <height>31</height>
       </rect>
      </property>
      <property name="styleSheet">
-      <string notr="true">border-style: solid;
-border-color: grey;
-border-width: 1px;
-border-radius: 12.5px;
-background-color: none;
-max-width:25px;
-max-height:25px;
-min-width:25px;
-min-height:25px;</string>
+      <string notr="true">opacity: 0</string>
      </property>
      <property name="text">
-      <string/>
+      <string>^</string>
      </property>
     </widget>
     <widget class="QPushButton" name="DownButton">
@@ -61,29 +47,21 @@ min-height:25px;</string>
       <rect>
        <x>180</x>
        <y>130</y>
-       <width>27</width>
-       <height>27</height>
+       <width>31</width>
+       <height>31</height>
       </rect>
      </property>
      <property name="styleSheet">
-      <string notr="true">border-style: solid;
-border-color: grey;
-border-width: 1px;
-border-radius: 12.5px;
-background-color: none;
-max-width:25px;
-max-height:25px;
-min-width:25px;
-min-height:25px;</string>
+      <string notr="true">opacity: 0</string>
      </property>
      <property name="text">
-      <string/>
+      <string>V</string>
      </property>
     </widget>
     <widget class="QPushButton" name="SelectButton">
      <property name="geometry">
       <rect>
-       <x>167</x>
+       <x>170</x>
        <y>70</y>
        <width>54</width>
        <height>54</height>
@@ -108,61 +86,47 @@ min-height:50px;</string>
      <property name="geometry">
       <rect>
        <x>230</x>
-       <y>85</y>
-       <width>27</width>
-       <height>27</height>
+       <y>80</y>
+       <width>31</width>
+       <height>31</height>
       </rect>
      </property>
      <property name="styleSheet">
-      <string notr="true">border-style: solid;
-border-color: grey;
-border-width: 1px;
-border-radius: 12.5px;
-background-color: none;
-max-width:25px;
-max-height:25px;
-min-width:25px;
-min-height:25px;</string>
+      <string notr="true">opacity: 0</string>
      </property>
      <property name="text">
-      <string/>
+      <string>&gt;</string>
      </property>
     </widget>
     <widget class="QPushButton" name="LeftButton">
      <property name="geometry">
       <rect>
        <x>130</x>
-       <y>85</y>
-       <width>27</width>
-       <height>27</height>
+       <y>80</y>
+       <width>31</width>
+       <height>31</height>
       </rect>
      </property>
      <property name="styleSheet">
-      <string notr="true">border-style: solid;
-border-color: grey;
-border-width: 1px;
-border-radius: 12.5px;
-background-color: none;
-max-width:25px;
-max-height:25px;
-min-width:25px;
-min-height:25px;</string>
+      <string notr="true">opacity: 0</string>
      </property>
      <property name="text">
-      <string/>
+      <string>&lt;</string>
      </property>
     </widget>
     <widget class="QPushButton" name="PowerButton">
      <property name="geometry">
       <rect>
        <x>170</x>
-       <y>190</y>
-       <width>50</width>
-       <height>50</height>
+       <y>180</y>
+       <width>54</width>
+       <height>54</height>
       </rect>
      </property>
      <property name="styleSheet">
-      <string notr="true">border:none;
+      <string notr="true">border-style: solid;
+border-color: grey;
+border-width: 2px;
 border-radius: 25px;
 background-color: none;
 max-width:50px;
@@ -177,49 +141,33 @@ min-height:50px;</string>
     <widget class="QPushButton" name="BackButton">
      <property name="geometry">
       <rect>
-       <x>0</x>
+       <x>10</x>
        <y>0</y>
-       <width>27</width>
-       <height>27</height>
+       <width>31</width>
+       <height>31</height>
       </rect>
      </property>
      <property name="styleSheet">
-      <string notr="true">border-style: solid;
-border-color: grey;
-border-width: 1px;
-border-radius: 12.5px;
-background-color: none;
-max-width:25px;
-max-height:25px;
-min-width:25px;
-min-height:25px;</string>
+      <string notr="true">opacity: 0</string>
      </property>
      <property name="text">
-      <string/>
+      <string>&lt;</string>
      </property>
     </widget>
     <widget class="QPushButton" name="MenuButton">
      <property name="geometry">
       <rect>
-       <x>350</x>
+       <x>330</x>
        <y>0</y>
-       <width>27</width>
-       <height>27</height>
+       <width>51</width>
+       <height>31</height>
       </rect>
      </property>
      <property name="styleSheet">
-      <string notr="true">border-style: solid;
-border-color: grey;
-border-width: 1px;
-border-radius: 12.5px;
-background-color: none;
-max-width:25px;
-max-height:25px;
-min-width:25px;
-min-height:25px;</string>
+      <string notr="true">opacity: 0</string>
      </property>
      <property name="text">
-      <string/>
+      <string>Menu</string>
      </property>
     </widget>
    </widget>
@@ -227,7 +175,7 @@ min-height:25px;</string>
     <property name="geometry">
      <rect>
       <x>30</x>
-      <y>40</y>
+      <y>60</y>
       <width>381</width>
       <height>251</height>
      </rect>
@@ -1076,83 +1024,16 @@ background-color: red
      <string>HeartWave</string>
     </property>
    </widget>
-   <widget class="QWidget" name="widget" native="true">
-    <property name="geometry">
-     <rect>
-      <x>449</x>
-      <y>39</y>
-      <width>781</width>
-      <height>501</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">background-color: rgba(38, 36, 39, 0.6)</string>
-    </property>
-    <widget class="QLabel" name="label_20">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>20</y>
-       <width>131</width>
-       <height>17</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <pointsize>-1</pointsize>
-       <weight>75</weight>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">font-size: 16px; background: none; color: white;</string>
-     </property>
-     <property name="text">
-      <string>Battery Level</string>
-     </property>
-    </widget>
-    <widget class="QSpinBox" name="PowerBox">
-     <property name="geometry">
-      <rect>
-       <x>674</x>
-       <y>20</y>
-       <width>81</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">color: white</string>
-     </property>
-    </widget>
-   </widget>
-   <widget class="QLabel" name="label_15">
-    <property name="geometry">
-     <rect>
-      <x>450</x>
-      <y>20</y>
-      <width>101</width>
-      <height>17</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">font-size: 16px</string>
-    </property>
-    <property name="text">
-     <string>Admin Menu</string>
-    </property>
-   </widget>
    <zorder>DisplayScreen</zorder>
    <zorder>Buttons</zorder>
    <zorder>Title</zorder>
-   <zorder>widget</zorder>
-   <zorder>label_15</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1282</width>
+     <width>451</width>
      <height>22</height>
     </rect>
    </property>

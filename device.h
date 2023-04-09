@@ -1,10 +1,18 @@
 #ifndef DEVICE_H
 #define DEVICE_H
 
+#define MAX_HISTORY 64
+
 using namespace std;
 #include <iostream>
+#include <fstream>
 #include <time.h>
-
+#include "sessionhistory.h"
+#include "QScrollArea"
+#include "QVBoxLayout"
+#include "QLabel"
+#include "QDateTime"
+#include "QPushButton"
 class MainWindow;
 
 class Device
@@ -29,6 +37,11 @@ public:
     bool GetIsOn();
     void BackButton();
     void MenuButton();
+    void SetupVariables();
+    void FindHistory();
+    void ShowSummary(int);
+    void SetupButtons();
+
 private:
     float batteryLevel;
     string time;
@@ -37,10 +50,16 @@ private:
     int lastMenu = 0;
     int subMenu = 0;
 
+
+    bool inSummary;
     bool isOn;
 
     int breathPacer;
     string challenger;
+
+
+    int historySize;
+    SessionHistory *history[MAX_HISTORY];
 };
 
 #endif // DEVICE_H

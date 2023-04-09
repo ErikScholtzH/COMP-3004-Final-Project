@@ -6,8 +6,7 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-
-    device = new Device(this);
+    SetupButtons();
 }
 
 MainWindow::~MainWindow()
@@ -16,6 +15,32 @@ MainWindow::~MainWindow()
     delete device;
 }
 
+void MainWindow::SetupButtons(){
+    QPushButton *button = findChild<QPushButton*>(QString::fromStdString("PowerButton"));
+    button->setIcon(QIcon(":/new/prefix1/Power.png"));
+    button->setIconSize(QSize(50, 50));
+
+    int rot;
+    vector<string> names = {"Up", "Right", "Down", "Left"};
+    for (auto name : names) {
+        button = findChild<QPushButton*>(QString::fromStdString(name+"Button"));
+        button->setIcon(QIcon(QString::fromStdString(":/new/prefix1/arrow" + name + ".png")));
+        button->setIconSize(QSize(25, 25));
+    }
+
+    button = findChild<QPushButton*>(QString::fromStdString("BackButton"));
+    button->setIcon(QIcon(":/new/prefix1/undo.png"));
+    button->setIconSize(QSize(25, 25));
+
+    button = findChild<QPushButton*>(QString::fromStdString("MenuButton"));
+    button->setIcon(QIcon(":/new/prefix1/home.png"));
+    button->setIconSize(QSize(25, 25));
+
+}
+
+void MainWindow::StartSim(){
+    device = new Device(this);
+}
 void MainWindow::SetBatteryColor(string color){
     setStyleSheet("QProgressBar#BatteryVisual::chunk{background-color: " + QString::fromStdString(color) + "}");
 }
@@ -39,41 +64,52 @@ void MainWindow::SetButtonColor(string color, string object){
 
 void MainWindow::on_UpButton_released()
 {
+    if(!setup) return;
     device->UpButton();
 }
 
 void MainWindow::on_DownButton_released()
 {
+    if(!setup) return;
     device->DownButton();
 }
 
 void MainWindow::on_SelectButton_released()
 {
+    if(!setup) return;
     device->SelectButton();
 }
 
 void MainWindow::on_LeftButton_released()
 {
+    if(!setup) return;
     device->DecreaseButton();
 }
 
 void MainWindow::on_RightButton_released()
 {
+    if(!setup) return;
     device->IncreaseButton();
 }
 
 void MainWindow::on_PowerButton_released()
 {
+    if(!setup){
+        StartSim();
+        setup = true;
+    }
     if(device->GetIsOn()) device->TurnOff();
     else device->TurnOn();
 }
 
 void MainWindow::on_BackButton_released()
 {
+    if(!setup) return;
     device->BackButton();
 }
 
 void MainWindow::on_MenuButton_released()
 {
+    if(!setup) return;
     device->MenuButton();
 }

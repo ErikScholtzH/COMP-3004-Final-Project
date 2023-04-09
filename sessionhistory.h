@@ -1,0 +1,42 @@
+#ifndef SESSIONHISTORY_H
+#define SESSIONHISTORY_H
+
+#define MAX_POINTS 60
+using namespace std;
+#include <iostream>
+#include <cstdio>
+#include <bits/stdc++.h>
+
+class SessionHistory
+{
+public:
+    SessionHistory(string, int, int, int, float, int, int, string, string, string);
+    friend ostream& operator <<(ostream& os, SessionHistory const & sh){
+        return os << " challengeLevel: " << sh.challengeLevel << " coheranceLowTime: " << sh.coheranceLowTime << " coheranceMedTime: " << sh.coheranceMedTime << " coheranceHighTime: " << sh.coheranceHighTime << " averageCoherance: " << sh.averageCoherance << " toalTime: " << sh.toalTime << " achievementScore: " << sh.achievementScore << " date: " << sh.date << " time: " << sh.time << endl;
+    }
+    string GetChallengeLevel() const;
+    int GetCoheranceLowTime() const;
+    int GetCoheranceMedTime() const;
+    int GetCoheranceHighTime() const;
+    float GetAverageCoherance() const;
+    int GetToalTime() const;
+    int GetAchievementScore() const;
+    int* GetHrvPoints();
+    string GetDate() const;
+    string GetTime() const;
+    
+private:
+    string challengeLevel;
+    int coheranceLowTime;
+    int coheranceMedTime;
+    int coheranceHighTime;
+    float averageCoherance;
+    int toalTime;
+    int achievementScore;
+    int hrvPoints[MAX_POINTS];
+    string date;
+    string time;
+
+};
+
+#endif // SESSIONHISTORY_H

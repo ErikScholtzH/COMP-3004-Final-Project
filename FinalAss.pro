@@ -23,6 +23,7 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     poc.cpp \
+    sessionhistory.cpp \
     user.cpp
 
 HEADERS += \
@@ -32,6 +33,7 @@ HEADERS += \
     heartmeasuringelectrodes.h \
     mainwindow.h \
     poc.h \
+    sessionhistory.h \
     user.h
 
 FORMS += \
@@ -44,3 +46,6 @@ TRANSLATIONS += \
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+RESOURCES += \
+    MyResources.qrc

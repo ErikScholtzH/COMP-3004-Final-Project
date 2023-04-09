@@ -5,11 +5,71 @@ Device::Device(MainWindow *_mw)
 {
     mw = _mw;
     TurnOff();
-    batteryLevel = 10;
-
-    breathPacer = 10;
-    challenger = "Beginner";
+    SetupVariables();
     SetBatteryLevel();
+    FindHistory();
+}
+
+void Device::SetupVariables(){
+    inSummary = false;
+    isOn = false;
+    batteryLevel = 70;
+    breathPacer = 10;
+    menu = 0;
+    subMenu = 0;
+    lastMenu = 0;
+    historySize = 0;
+    challenger = "Beginner";
+}
+
+void Device::FindHistory(){
+    QWidget* parent = mw->findChild<QWidget*>(QString::fromStdString("historyFrame"));
+    QVBoxLayout* layout = new QVBoxLayout(parent);
+
+    layout->setAlignment(Qt::AlignTop | Qt::AlignCenter);
+    layout->setSpacing(2);
+    for(int i = 0; i < MAX_HISTORY; i++){
+        fstream inFile;
+        inFile.open("data" + to_string(i) + ".venomS3V0N", ios::in);
+        if(inFile.is_open()){
+            int count = 0;
+            string tp;
+            string params[10];
+
+            while(getline(inFile, tp)){
+                params[count] = tp;
+                count++;
+            }
+            history[i] = new SessionHistory(params[0],       stoi(params[1]), stoi(params[2]), stoi(params[3]),
+                                        stof(params[4]), stoi(params[5]), stoi(params[6]), params[7],
+                                        params[8],       params[9]);
+            inFile.close();
+
+            QWidget* newWig = new QWidget(mw);
+            newWig->setFixedSize(361, 51);
+            newWig->setStyleSheet(QString::fromStdString("background-color: #94a6b5"));
+            newWig->setObjectName(QString::fromStdString("_"+to_string(i)+"Hist"));
+
+            QLabel *newLabel = new QLabel(newWig);
+            newLabel->setObjectName(QString::fromStdString("Label"));
+            newLabel->setText(QString::fromStdString(params[8] + "   -   " + params[9]));
+            newLabel->move(100, 10);
+            newLabel->setStyleSheet("font-size: 15px; border: none;");
+
+            newWig->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
+            layout->addWidget(newWig);
+            historySize++;
+
+            inFile.close();
+            continue;
+        }
+
+        break;
+    }
+
+    parent->move(0, 0);
+    parent->show();
 }
 
 bool Device::GetIsOn(){
@@ -18,9 +78,14 @@ bool Device::GetIsOn(){
 void Device::TurnOn(){
     isOn = true;
     menu = 0;
-    QWidget *qw = mw->findChild<QWidget*>(QString::fromStdString("MainMenu"));
+    subMenu = 0;
+    QWidget *qw = mw->findChild<QWidget*>(QString::fromStdString("_0MainMenu"));
     if(qw) qw->raise();
     else cout << "Cant find MainMenu" << endl;
+    mw->SetButtonColor("#3b6282", "MM_Button1");
+    mw->SetButtonColor("#94a6b5", "MM_Button2");
+    mw->SetButtonColor("#94a6b5", "MM_Button3");
+
 
     qw = mw->findChild<QWidget*>(QString::fromStdString("OffScreen"));
     if(qw) qw->lower();
@@ -60,7 +125,7 @@ void Device::SetBatteryLevel(){
 }
 
 void Device::DownButton(){
-    if(!isOn) return;
+    if(!isOn || inSummary) return;
     if(menu == 0){//Main Menu
         if(subMenu == 2){
             subMenu = 0;
@@ -85,12 +150,25 @@ void Device::DownButton(){
             mw->SetButtonColor("#94a6b5", "S_Button2");
             mw->SetButtonColor("#3b6282", "S_Button1");
         }
-    }
+    }else if(menu == 3){
+        if(subMenu <= 0){
+            mw->SetButtonColor("#94a6b5", "_"+to_string(subMenu)+"Hist");
+            subMenu = historySize-1;
+            mw->SetButtonColor("#3b6282", "_"+to_string(subMenu)+"Hist");
+        }
+        else{
+            mw->SetButtonColor("#94a6b5", "_"+to_string(subMenu)+"Hist");
+            subMenu--;
+            mw->SetButtonColor("#3b6282", "_"+to_string(subMenu)+"Hist");
+        }
+        QWidget* parent = mw->findChild<QWidget*>(QString::fromStdString("historyFrame"));
+        parent->move(0, -53 * subMenu);
 
+    }
 }
 
 void Device::UpButton(){
-    if(!isOn) return;
+    if(!isOn || inSummary) return;
     if(menu == 0){
         if(subMenu == 2){
             subMenu = 1;
@@ -115,32 +193,64 @@ void Device::UpButton(){
             mw->SetButtonColor("#94a6b5", "S_Button2");
             mw->SetButtonColor("#3b6282", "S_Button1");
         }
+    }else if(menu == 3){
+        if(subMenu >= historySize-1){
+            mw->SetButtonColor("#94a6b5", "_"+to_string(subMenu)+"Hist");
+            subMenu = 0;
+            mw->SetButtonColor("#3b6282", "_"+to_string(subMenu)+"Hist");
+        }
+        else{
+            mw->SetButtonColor("#94a6b5", "_"+to_string(subMenu)+"Hist");
+            subMenu++;
+            mw->SetButtonColor("#3b6282", "_"+to_string(subMenu)+"Hist");
+        }
+        QWidget* parent = mw->findChild<QWidget*>(QString::fromStdString("historyFrame"));
+        parent->move(0, -53 * subMenu);
     }
 
 }
 
 void Device::BackButton(){
     if(!isOn) return;
+
+    inSummary = false;
     menu = lastMenu;
     subMenu = 0;
     QWidget *qw;
-    if(menu==0){
-        qw = mw->findChild<QWidget*>(QString::fromStdString("MainMenu"));
+
+    mw->findChild<QWidget*>(QString::fromStdString("__Overview"))->lower();
+
+    if(menu==0){//Main Menu
+        qw = mw->findChild<QWidget*>(QString::fromStdString("_0MainMenu"));
         mw->SetButtonColor("#3b6282", "MM_Button1");
         mw->SetButtonColor("#94a6b5", "MM_Button2");
         mw->SetButtonColor("#94a6b5", "MM_Button3");
-     }else if(menu == 1){
-        qw = mw->findChild<QWidget*>(QString::fromStdString("Settings"));
+     }else if(menu == 1){//Settings
+        qw = mw->findChild<QWidget*>(QString::fromStdString("_1Settings"));
         mw->SetButtonColor("#94a6b5", "S_Button2");
         mw->SetButtonColor("#3b6282", "S_Button1");
-    }else if(menu == 2){
-        qw = mw->findChild<QWidget*>(QString::fromStdString("HVRScreen"));
+    }else if(menu == 2){//HVR Screen
+        qw = mw->findChild<QWidget*>(QString::fromStdString("_2HVRScreen"));
+    }else if(menu == 3){//Log History
+        qw = mw->findChild<QWidget*>(QString::fromStdString("_3LogHistory"));
+        if(historySize > 0){
+            for(int i = 0; i < historySize; i++)
+                mw->SetButtonColor("#94a6b5", "_"+to_string(i)+"Hist");
+
+            mw->SetButtonColor("#3b6282", "_"+to_string(0)+"Hist");
+
+            QWidget* parent = mw->findChild<QWidget*>(QString::fromStdString("historyFrame"));
+            parent->move(0, 0);
+        }
+        qw->raise();
     }
     qw->raise();
 }
 
 void Device::MenuButton(){
     if(!isOn) return;
+
+    inSummary = false;
     menu = 0;
     subMenu = 0;
 
@@ -148,13 +258,16 @@ void Device::MenuButton(){
     mw->SetButtonColor("#94a6b5", "MM_Button2");
     mw->SetButtonColor("#94a6b5", "MM_Button3");
 
-    QWidget *qw = mw->findChild<QWidget*>(QString::fromStdString("MainMenu"));
+    QWidget *qw = mw->findChild<QWidget*>(QString::fromStdString("_0MainMenu"));
+
     qw->raise();
+
+    mw->findChild<QWidget*>(QString::fromStdString("__Overview"))->lower();
 }
 
 
 void Device::IncreaseButton(){
-    if(!isOn) return;
+    if(!isOn || inSummary) return;
     if(menu==1){
         if(subMenu == 0){
             IncreaseDifficulty();
@@ -165,7 +278,7 @@ void Device::IncreaseButton(){
 }
 
 void Device::DecreaseButton(){
-    if(!isOn) return;
+    if(!isOn || inSummary) return;
     if(menu==1){
         if(subMenu == 0){
             DecreaseDifficulty();
@@ -176,26 +289,43 @@ void Device::DecreaseButton(){
 }
 
 void Device::SelectButton(){
-    if(!isOn) return;
-    lastMenu = menu;
+    if(!isOn || inSummary) return;
     if(menu==0){
+        lastMenu = menu;
+        QWidget *qw;
         if(subMenu == 0){
             menu = 2;
-            QWidget *qw = mw->findChild<QWidget*>(QString::fromStdString("HVRScreen"));
+            qw = mw->findChild<QWidget*>(QString::fromStdString("_2HVRScreen"));
             qw->raise();
         }else if (subMenu == 1){
             menu = 1;
-            QWidget *qw = mw->findChild<QWidget*>(QString::fromStdString("Settings"));
+            qw = mw->findChild<QWidget*>(QString::fromStdString("_1Settings"));
             qw->raise();
         }else if(subMenu == 2){
+            menu = 3;
+            qw = mw->findChild<QWidget*>(QString::fromStdString("_3LogHistory"));
+            if(historySize > 0){
 
+                for(int i = 0; i < historySize; i++)
+                    mw->SetButtonColor("#94a6b5", "_"+to_string(i)+"Hist");
+
+                mw->SetButtonColor("#3b6282", "_"+to_string(0)+"Hist");
+
+                QWidget* parent = mw->findChild<QWidget*>(QString::fromStdString("historyFrame"));
+                parent->move(0, 0);
+            }
+            qw->raise();
         }
         subMenu = 0;
+    }else if(menu == 3){
+        if(historySize > 0){
+            ShowSummary(subMenu);
+        }
     }
 }
 
 void Device::IncreaseDifficulty(){
-    if(!isOn) return;
+    if(!isOn || inSummary) return;
     if(challenger == "Beginner"){
         challenger = "Intermediate";
     }else if(challenger == "Intermediate"){
@@ -212,7 +342,7 @@ void Device::IncreaseDifficulty(){
 }
 
 void Device::DecreaseDifficulty(){
-    if(!isOn) return;
+    if(!isOn || inSummary) return;
     if(challenger == "Beginner"){
         challenger = "Advanced";
     }else if(challenger == "Intermediate"){
@@ -229,7 +359,7 @@ void Device::DecreaseDifficulty(){
 }
 
 void Device::IncreaseLevel(){
-    if(!isOn) return;
+    if(!isOn || inSummary) return;
     if(breathPacer == 30) breathPacer = 1;
     else breathPacer++;
 
@@ -239,11 +369,25 @@ void Device::IncreaseLevel(){
 }
 
 void Device::DecreaseLevel(){
-    if(!isOn) return;
+    if(!isOn || inSummary) return;
     if(breathPacer == 1) breathPacer = 30;
     else breathPacer--;
 
     QLabel *ql = mw->findChild<QLabel*>(QString::fromStdString("BP_Text"));
     if(ql) ql->setText(QString::number(breathPacer));
     else cout << "Couldnt find BP_Text" << endl;
+}
+
+void Device::ShowSummary(int num){
+    inSummary = true;
+    if(historySize < num) cout << "Dumb dumb alert, somebody is begging for a stack overflow";
+    SessionHistory * ses = history[num];
+    mw->findChild<QLabel*>(QString::fromStdString("CL"))->setText(QString::fromStdString(ses->GetChallengeLevel()));
+    mw->findChild<QLabel*>(QString::fromStdString("TIL"))->setText(QString::fromStdString(to_string(ses->GetCoheranceLowTime())));
+    mw->findChild<QLabel*>(QString::fromStdString("TIM"))->setText(QString::fromStdString(to_string(ses->GetCoheranceMedTime())));
+    mw->findChild<QLabel*>(QString::fromStdString("TIH"))->setText(QString::fromStdString(to_string(ses->GetCoheranceHighTime())));
+    mw->findChild<QLabel*>(QString::fromStdString("AC"))->setText(QString::fromStdString(to_string(ses->GetAverageCoherance())));
+    mw->findChild<QLabel*>(QString::fromStdString("LS"))->setText(QString::fromStdString(to_string(ses->GetToalTime())));
+    mw->findChild<QLabel*>(QString::fromStdString("AS"))->setText(QString::fromStdString(to_string(ses->GetAchievementScore())));
+    mw->findChild<QWidget*>(QString::fromStdString("__Overview"))->raise();
 }

@@ -20,6 +20,9 @@ public:
     void SetBatteryColor(string color);
     void SetBatteryLevel(int batteryLevel);
     void SetButtonColor(string color, string object);
+    void StartSim();
+    void GetUI();
+    void SetupButtons();
 
 private slots:
     void on_UpButton_released();
@@ -41,5 +44,6 @@ private slots:
 private:
     Ui::MainWindow *ui;
     Device *device;
+    bool setup;
 };
 #endif // MAINWINDOW_H
