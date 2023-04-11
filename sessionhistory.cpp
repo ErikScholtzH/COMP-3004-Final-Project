@@ -1,7 +1,8 @@
 #include "sessionhistory.h"
 
-SessionHistory::SessionHistory(string cl, int clt, int cmt, int cht, float ac, int tt, int as, string hrvp, string d, string t)
+SessionHistory::SessionHistory(string cl, int clt, int cmt, int cht, float ac, int tt, int as, int hrvp[], string d, string t)
 {
+//    cout << "3: " <<hrvp[3] << "4: " <<hrvp[4] << "5: " <<hrvp[5] <<endl;
     challengeLevel = cl;
     coheranceLowTime = clt;
     coheranceMedTime = cmt;
@@ -10,13 +11,17 @@ SessionHistory::SessionHistory(string cl, int clt, int cmt, int cht, float ac, i
     toalTime = tt;
     achievementScore = as;
 
-    int count = 0;
-    char * val = strtok(strdup(hrvp.data()), " ");
-    while(val != NULL){
-        hrvPoints[count] = stoi(val);
-        count++;
-        val = strtok(NULL, "");
+
+    //new code
+    int i;
+    for(i = 0; i < tt/5; i++){
+        hrvPoints[i] = hrvp[i];
     }
+    for(int j = i; j < MAX_POINTS; j++){
+        hrvPoints[j] = -1;
+    }
+    //new code
+
 
     date = d;
     time = t;

@@ -11,7 +11,7 @@ class SessionHistory
 {
 public:
 //    SessionHistory(string, int, int, int, float, int, int, string, string, string);
-    SessionHistory(string cl, int clt, int cmt, int cht, float ac, int tt, int as, int hrvp[], string d, string t);
+    SessionHistory(string cl, int clt, int cmt, int cht, float ac, int tt, int as, int* hrvp, string d, string t);
     friend ostream& operator <<(ostream& os, SessionHistory const & sh){
         return os << " challengeLevel: " << sh.challengeLevel << " coheranceLowTime: " << sh.coheranceLowTime << " coheranceMedTime: " << sh.coheranceMedTime << " coheranceHighTime: " << sh.coheranceHighTime << " averageCoherance: " << sh.averageCoherance << " toalTime: " << sh.toalTime << " achievementScore: " << sh.achievementScore << " date: " << sh.date << " time: " << sh.time << endl;
     }

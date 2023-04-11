@@ -1,0 +1,112 @@
+#include "SessionManager.h"
+
+SessionManager::SessionManager()
+{
+//    SaveToFile();
+//    LoadFromFile();
+}
+
+bool SessionManager::findSession(string fileName){
+    if (FILE *file = fopen(fileName.c_str(), "r")){
+        fclose(file);
+        return true;
+    }
+    return false;
+}
+
+SessionHistory* SessionManager::LoadFromFile(string fileName){
+
+    fstream inFile;
+    inFile.open(fileName, ios::in);
+    if(inFile.is_open()){
+        int count = 0;
+        string tp;
+        string params[10];
+
+        while(getline(inFile, tp)){
+            params[count] = tp;
+            count++;
+        }
+        inFile.close();
+        int arr[60];
+        for(int i = 0; i < sizeof(arr)/sizeof(int); i++){
+            string buffer = "";
+            for(int j = 0; j < strlen(params[7].c_str()); j++){
+                if(params[7][j] ==  ' '){
+                    arr[i] = stoi(buffer);
+                    break;
+                }
+                buffer = strcat(buffer.c_str(), params[7][j]);
+            }
+        }
+        return new SessionHistory(params[0], stoi(params[1]), stoi(params[2]), stoi(params[3]), stof(params[4]), stoi(params[5]), stoi(params[6]), arr, params[8], params[9]);
+    }
+}
+
+void SessionManager::SaveToFile(SessionHistory* session, int index){
+    cout << "Saving session..." << endl;
+    ofstream outFile("data" + to_string(index) + ".txt");
+
+    outFile << session->GetChallengeLevel() << endl;
+    outFile << session->GetCoheranceHighTime() <<endl;
+    outFile << session->GetCoheranceMedTime() <<endl;
+    outFile << session->GetCoheranceLowTime() <<endl;
+    outFile << session->GetAverageCoherance() << endl;
+    outFile << session->GetAchievementScore() << endl;
+    outFile << session->GetHrvPoints() << endl;
+    string hrvPoints = arrayToString(session->GetHrvPoints());
+    outFile << hrvPoints << endl;
+    outFile << session->GetDate() <<  endl;
+    outFile << session->GetTime() <<  endl;
+
+    cout << "Session saved."<< endl;
+    outFile.close();
+}
+
+//char* SessionManager::arrayToString(int* arr) {
+//    char* str = NULL;
+//    int str_size = 0;
+//    int num_digits = 0;
+
+//    // calculate the size of the output string
+//    for (int i = 0; i < size; i++) {
+//        num_digits = snprintf(NULL, 0, "%d", arr[i]);
+//        if (num_digits < 0) {
+//            printf("Error: conversion to string failed.\n");
+//            exit(EXIT_FAILURE);
+//        }
+//        str_size += num_digits + 1;
+//    }
+//    str_size--;
+
+//    // allocate memory for the output string
+//    str = (char*)malloc(str_size * sizeof(char));
+//    if (!str) {
+//        printf("Error: memory allocation failed.\n");
+//        exit(EXIT_FAILURE);
+//    }
+
+//    // convert the array to a string
+//    for (int i = 0; i < size; i++) {
+//        num_digits = snprintf(NULL, 0, "%d", arr[i]);
+//        if (num_digits < 0) {
+//            printf("Error: conversion to string failed.\n");
+//            exit(EXIT_FAILURE);
+//        }
+//        sprintf(str, "%s%d ", str, arr[i]);
+//        str += num_digits + 1;
+//    }
+//    str--;
+
+//    return str - str_size + 1;
+//}
+string SessionManager::arrayToString(int* arr) {
+    cout << "I'm receiving : " << arr[0] << endl;
+   char str[256] = "";
+    for(int i = 0; i < (sizeof(arr)/sizeof(int*)); i++){
+        cout << arr[i] << endl;
+        strcat(str, to_string(arr[i]).c_str());
+        strcat(str, " ");
+    }
+    return str;
+}
