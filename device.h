@@ -7,12 +7,15 @@ using namespace std;
 #include <iostream>
 #include <fstream>
 #include <time.h>
+#include <unistd.h>
+#include <QCoreApplication>
 #include "SessionManager.h"
 #include "QScrollArea"
 #include "QVBoxLayout"
 #include "QLabel"
 #include "QDateTime"
 #include "QPushButton"
+#include "QComboBox"
 class MainWindow;
 
 class Device
@@ -41,6 +44,8 @@ public:
     void FindHistory();
     void ShowSummary(int);
     void SetupButtons();
+    void updateLEDS(float);
+    void delay();
     int* stringToArray(char* str, int size);
 
 private:
@@ -57,6 +62,7 @@ private:
 
     int breathPacer;
     string challenger;
+    bool inSession;
 
 
     int historySize;
