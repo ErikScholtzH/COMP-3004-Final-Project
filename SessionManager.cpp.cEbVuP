@@ -1,0 +1,49 @@
+#include "SessionManager.h"
+
+SessionManager::SessionManager()
+{
+//    SaveToFile();
+//    LoadFromFile();
+}
+
+bool SessionManager::findSession(string fileName){
+    if (FILE *file = fopen(fileName.c_str(), "r")){
+        fclose(file);
+        return true;
+    }
+    return false;
+}
+
+SessionHistory* SessionManager::LoadFromFile(string fileName){
+
+    fstream inFile;
+    inFile.open(fileName, ios::in);
+    if(inFile.is_open()){
+        int count = 0;
+        string tp;
+        string params[10];
+
+        while(getline(inFile, tp)){
+            params[count] = tp;
+            count++;
+        }
+        inFile.close();
+        return new SessionHistory(params[0], stoi(params[1]), stoi(params[2]), stoi(params[3]), stof(params[4]), stoi(params[5]), stoi(params[6]), params[7], params[8], params[9]);
+    }
+}
+
+void SessionManager::SaveToFile(SessionHistory session, int index){
+    cout << "Saving session..." << endl;
+    ofstream outFile("data" + to_string(index) + ".txt");
+    outFile << session.GetChallengeLevel() << endl;
+    outFile << session.GetCoheranceHighTime() <<endl;
+    outFile << endl;
+    outFile << session.GetAverageCoherance() << endl;
+    outFile << session.GetAchievementScore() << endl;
+    outFile << session.GetHrvPoints() << endl;
+    outFile << session.GetDate() <<  endl;
+    outFile << session.GetTime() <<  endl;
+
+    cout << "Session saved."<< endl;
+    outFile.close();
+}

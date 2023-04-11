@@ -20,7 +20,6 @@ void Device::SetupVariables(){
     lastMenu = 0;
     historySize = 0;
     challenger = "Beginner";
-    sessionManager = new SessionManager();
 }
 
 void Device::FindHistory(){
@@ -30,8 +29,8 @@ void Device::FindHistory(){
     layout->setAlignment(Qt::AlignTop | Qt::AlignCenter);
     layout->setSpacing(2);
     for(int i = 0; i < MAX_HISTORY; i++){
-        if(sessionManager->findSession("data" + to_string(i) + ".txt")){
-            history[i] = sessionManager->LoadFromFile("data" + to_string(i) + ".txt");
+            history[i] = SessionManager.LoadFromFile("data" + to_string(i) + ".txt");
+            inFile.close();
 
             QWidget* newWig = new QWidget(mw);
             newWig->setFixedSize(361, 51);
@@ -40,7 +39,7 @@ void Device::FindHistory(){
 
             QLabel *newLabel = new QLabel(newWig);
             newLabel->setObjectName(QString::fromStdString("Label"));
-            newLabel->setText(QString::fromStdString(history[i]->GetDate() + "   -   " + history[i]->GetTime()));
+            newLabel->setText(QString::fromStdString(params[8] + "   -   " + params[9]));
             newLabel->move(100, 10);
             newLabel->setStyleSheet("font-size: 15px; border: none;");
 
@@ -49,8 +48,11 @@ void Device::FindHistory(){
             layout->addWidget(newWig);
             historySize++;
 
-            break;
+            inFile.close();
+            continue;
         }
+
+        break;
     }
 
     parent->move(0, 0);
@@ -288,20 +290,6 @@ void Device::SelectButton(){
             qw->raise();
         }else if(subMenu == 2){
             menu = 3;
-
-            FindHistory();
-            //new code
-            int totalTime = 30;
-            int arr[totalTime/5];
-            for(int i = 0; i<totalTime/5;i++) arr[i]=i;
-            history[0] = new SessionHistory("beginner", 0,0,0,0,totalTime,0, arr, "2023", "2:69");
-            //new code
-
-
-            historySize++;
-            sessionManager->SaveToFile(history[0], 24);
-
-
             qw = mw->findChild<QWidget*>(QString::fromStdString("_3LogHistory"));
             if(historySize > 0){
 
