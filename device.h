@@ -9,7 +9,7 @@ using namespace std;
 #include <time.h>
 #include <unistd.h>
 #include <QCoreApplication>
-#include "SessionManager.h"
+#include "sessionhistory.h"
 #include "QScrollArea"
 #include "QVBoxLayout"
 #include "QLabel"
@@ -44,7 +44,6 @@ public:
     void FindHistory();
     void ShowSummary(int);
     void SetupButtons();
-    int* stringToArray(char* str, int size);
     void updateLEDS(float);
     void delay();
 
@@ -67,8 +66,6 @@ private:
 
     int historySize;
     SessionHistory *history[MAX_HISTORY];
-
-    SessionManager* sessionManager;
 };
 
 #endif // DEVICE_H

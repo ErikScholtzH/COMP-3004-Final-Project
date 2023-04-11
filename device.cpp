@@ -22,7 +22,6 @@ void Device::SetupVariables(){
     historySize = 0;
     challenger = "Beginner";
     inSession = false;
-    sessionManager = new SessionManager();
 }
 
 void Device::FindHistory(){
@@ -32,10 +31,21 @@ void Device::FindHistory(){
     layout->setAlignment(Qt::AlignTop | Qt::AlignCenter);
     layout->setSpacing(2);
     for(int i = 0; i < MAX_HISTORY; i++){
+        fstream inFile;
+        inFile.open("data" + to_string(i) + ".venomS3V0N", ios::in);
+        if(inFile.is_open()){
+            int count = 0;
+            string tp;
+            string params[10];
 
-            if(sessionManager->findSession("data" + to_string(i) + ".txt")) {
-                history[i] = sessionManager->LoadFromFile("data" + to_string(i) + ".txt");
-
+            while(getline(inFile, tp)){
+                params[count] = tp;
+                count++;
+            }
+            history[i] = new SessionHistory(params[0],       stoi(params[1]), stoi(params[2]), stoi(params[3]),
+                                        stof(params[4]), stoi(params[5]), stoi(params[6]), params[7],
+                                        params[8],       params[9]);
+            inFile.close();
 
             QWidget* newWig = new QWidget(mw);
             newWig->setFixedSize(361, 51);
@@ -44,7 +54,7 @@ void Device::FindHistory(){
 
             QLabel *newLabel = new QLabel(newWig);
             newLabel->setObjectName(QString::fromStdString("Label"));
-            newLabel->setText(QString::fromStdString(history[i]->GetDate() + "   -   " + history[i]->GetTime()));
+            newLabel->setText(QString::fromStdString(params[8] + "   -   " + params[9]));
             newLabel->move(100, 10);
             newLabel->setStyleSheet("font-size: 15px; border: none;");
 
@@ -53,9 +63,11 @@ void Device::FindHistory(){
             layout->addWidget(newWig);
             historySize++;
 
-            break;
+            inFile.close();
+            continue;
         }
 
+        break;
     }
 
     parent->move(0, 0);
@@ -297,9 +309,6 @@ void Device::SelectButton(){
             qw->raise();
         }else if(subMenu == 2){
             menu = 3;
-
-
-
             qw = mw->findChild<QWidget*>(QString::fromStdString("_3LogHistory"));
             if(historySize > 0){
 
@@ -392,8 +401,6 @@ void Device::SelectButton(){
 
 
     }else if(menu == 3){
-        FindHistory();
-
         if(historySize > 0){
             ShowSummary(subMenu);
         }
