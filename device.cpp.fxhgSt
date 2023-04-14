@@ -1,6 +1,5 @@
 #include "device.h"
 #include "mainwindow.h"
-#include <QDebug>
 
 Device::Device(MainWindow *_mw)
 {
@@ -21,15 +20,6 @@ void Device::SetupVariables(){
     lastMenu = 0;
     historySize = 0;
     challenger = "Beginner";
-    inSession = false;
-    breathLoc = 0;
-    breathIn = true;
-
-    sessionManager = new SessionManager();
-    measuringDevice = new HeartMeasuringElectrodes();
-
-    x.resize(101);
-    y.resize(101);
 }
 
 void Device::FindHistory(){
@@ -39,8 +29,8 @@ void Device::FindHistory(){
     layout->setAlignment(Qt::AlignTop | Qt::AlignCenter);
     layout->setSpacing(2);
     for(int i = 0; i < MAX_HISTORY; i++){
-        if(sessionManager->findSession("data" + to_string(i) + ".txt")){
-            history[i] = sessionManager->LoadFromFile("data" + to_string(i) + ".txt");
+            history[i] = SessionManager.LoadFromFile("data" + to_string(i) + ".txt");
+            inFile.close();
 
             QWidget* newWig = new QWidget(mw);
             newWig->setFixedSize(361, 51);
@@ -49,7 +39,7 @@ void Device::FindHistory(){
 
             QLabel *newLabel = new QLabel(newWig);
             newLabel->setObjectName(QString::fromStdString("Label"));
-            newLabel->setText(QString::fromStdString(history[i]->GetDate() + "   -   " + history[i]->GetTime()));
+            newLabel->setText(QString::fromStdString(params[8] + "   -   " + params[9]));
             newLabel->move(100, 10);
             newLabel->setStyleSheet("font-size: 15px; border: none;");
 
@@ -58,8 +48,11 @@ void Device::FindHistory(){
             layout->addWidget(newWig);
             historySize++;
 
-            break;
+            inFile.close();
+            continue;
         }
+
+        break;
     }
 
     parent->move(0, 0);
@@ -96,12 +89,12 @@ int Device::GetBatteryLevel(){
     return batteryLevel;
 }
 void Device::DecreaseBatteryLevel(){
-    batteryLevel -= 0.5f;
+    batteryLevel -= 0.1f;
     SetBatteryLevel();
 }
 
 void Device::IncreaseBatteryLevel(){
-    batteryLevel += 0.5f;
+    batteryLevel += 0.1f;
     SetBatteryLevel();
 }
 
@@ -205,7 +198,7 @@ void Device::UpButton(){
 }
 
 void Device::BackButton(){
-    if(!isOn || inSession) return;
+    if(!isOn) return;
 
     inSummary = false;
     menu = lastMenu;
@@ -242,7 +235,7 @@ void Device::BackButton(){
 }
 
 void Device::MenuButton(){
-    if(!isOn || inSession) return;
+    if(!isOn) return;
 
     inSummary = false;
     menu = 0;
@@ -291,50 +284,12 @@ void Device::SelectButton(){
             menu = 2;
             qw = mw->findChild<QWidget*>(QString::fromStdString("_2HVRScreen"));
             qw->raise();
-            mw->findChild<QWidget*>(QString::fromStdString("widget_2"))->setStyleSheet("background: grey ");
-            mw->findChild<QWidget*>(QString::fromStdString("widget_3"))->setStyleSheet("background: grey ");
-            mw->findChild<QWidget*>(QString::fromStdString("widget_4"))->setStyleSheet("background: grey ");
-
-            mw->findChild<QLabel*>(QString::fromStdString("label_5"))->setText("000.000");
-            mw->findChild<QLabel*>(QString::fromStdString("label_6"))->setText("000.000");
-            mw->findChild<QLabel*>(QString::fromStdString("label_7"))->setText("000.000");
-
-            mw->findChild<QCustomPlot*>(QString::fromStdString("plot"))->xAxis->setRange(0, 64);
-            mw->findChild<QCustomPlot*>(QString::fromStdString("plot"))->yAxis->setRange(40, 100);
-
-            mw->findChild<QProgressBar*>(QString::fromStdString("progressBar"))->setValue(0);
-            x.clear();
-            y.clear();
-            x.resize(101);
-            y.resize(101);
-            mw->findChild<QCustomPlot*>(QString::fromStdString("plot"))->addGraph();
-            mw->findChild<QCustomPlot*>(QString::fromStdString("plot"))->graph(0)->setData(x, y);
-            mw->findChild<QCustomPlot*>(QString::fromStdString("plot"))->replot();
-
-            measuringDevice->reset();
-
-            breathLoc = 0;
-
         }else if (subMenu == 1){
             menu = 1;
             qw = mw->findChild<QWidget*>(QString::fromStdString("_1Settings"));
             qw->raise();
         }else if(subMenu == 2){
             menu = 3;
-
-            FindHistory();
-            //new code
-            int totalTime = 30;
-            int arr[totalTime/5];
-            for(int i = 0; i<totalTime/5;i++) arr[i]=i;
-            history[0] = new SessionHistory("beginner", 0,0,0,0,totalTime,0, arr, "2023", "2:69");
-            //new code
-
-
-            historySize++;
-            sessionManager->SaveToFile(history[0], 24);
-
-
             qw = mw->findChild<QWidget*>(QString::fromStdString("_3LogHistory"));
             if(historySize > 0){
 
@@ -349,12 +304,6 @@ void Device::SelectButton(){
             qw->raise();
         }
         subMenu = 0;
-    }
-    else if(menu == 2) {
-
-        runSession();
-
-
     }else if(menu == 3){
         if(historySize > 0){
             ShowSummary(subMenu);
@@ -414,234 +363,6 @@ void Device::DecreaseLevel(){
     QLabel *ql = mw->findChild<QLabel*>(QString::fromStdString("BP_Text"));
     if(ql) ql->setText(QString::number(breathPacer));
     else cout << "Couldnt find BP_Text" << endl;
-}
-
-
-void Device::delay() {
-    QTime dieTime = QTime::currentTime().addSecs(1);
-    while (QTime::currentTime() < dieTime)
-        QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
-}
-
-void Device::runSession() {
-
-    if(!inSession) {
-
-        inSession = true;
-
-        string level = (mw->findChild<QComboBox*>(QString::fromStdString("comboBox"))->currentText()).toStdString();
-
-        QWidget* redOn = mw->findChild<QWidget*>(QString::fromStdString("widget_2"));
-        QWidget* blueOn = mw->findChild<QWidget*>(QString::fromStdString("widget_3"));
-        QWidget* greenOn = mw->findChild<QWidget*>(QString::fromStdString("widget_4"));
-
-        QLabel* coherenceScoreLabel = mw->findChild<QLabel*>(QString::fromStdString("label_5"));
-        QLabel* timeLabel = mw->findChild<QLabel*>(QString::fromStdString("label_6"));
-        QLabel* achievementScoreLabel = mw->findChild<QLabel*>(QString::fromStdString("label_7"));
-
-        QLabel* batteryLevel = mw->findChild<QLabel*>(QString::fromStdString("batteryPercent"));
-
-        cout << "here" << endl;
-
-
-
-        float val;
-        int j = 0;
-        float sum = 0.0;
-
-        QCustomPlot* myPlot = mw->findChild<QCustomPlot*>(QString::fromStdString("plot"));
-
-
-
-        if(level == "Low") {
-
-            for(int i = 0; i < 84; i++){
-                delay();
-                DecreaseBatteryLevel();
-
-                val = measuringDevice->getNextIncoherentScore();
-                sum += val;
-                coherenceScoreLabel->setText(QString::number(sum/(i+1)));
-                timeLabel->setText(QString::number(i+1));
-
-
-                if(i%5 == 4) {
-                    achievementScoreLabel->setText(QString::number(sum));
-                }
-
-                updateLEDS(sum/(i+1));
-                updateBreathPacerBar();
-
-                x[i] = j;
-                y[i] = measuringDevice->getNextIncoherentBPM();
-
-                myPlot->addGraph();
-                myPlot->graph(0)->setData(x, y);
-                myPlot->replot();
-
-                if(i % 63 == 0) {
-                    x.clear();
-                    y.clear();
-                    x.resize(101);
-                    y.resize(101);
-                    j = 0;
-                }
-                j += 1;
-
-                if(!inSession) {
-                    break;
-                }
-            }
-
-        }
-        else if(level == "Medium") {
-            for(int i = 0; i < 84; i++){
-                delay();
-                DecreaseBatteryLevel();
-
-                val = measuringDevice->getNextMidcoherentScore();
-                sum += val;
-                coherenceScoreLabel->setText(QString::number(sum/(i+1)));
-                timeLabel->setText(QString::number(i+1));
-
-
-                if(i%5 == 4) {
-                    achievementScoreLabel->setText(QString::number(sum));
-                }
-
-                updateLEDS(sum/(i+1));
-                updateBreathPacerBar();
-
-                x[i] = j;
-                y[i] = measuringDevice->getNextMidcoherentBPM();
-
-                myPlot->addGraph();
-                myPlot->graph(0)->setData(x, y);
-                myPlot->replot();
-
-                if(i % 63 == 0) {
-                    x.clear();
-                    y.clear();
-                    x.resize(101);
-                    y.resize(101);
-                    j = 0;
-                }
-                j += 1;
-
-                if(!inSession) {
-                    break;
-                }
-            }
-
-        }
-        else {
-
-            for(int i = 0; i < 84; i++){
-                delay();
-                DecreaseBatteryLevel();
-
-                val = measuringDevice->getNextCoherentScore();
-                sum += val;
-                coherenceScoreLabel->setText(QString::number(sum/(i+1)));
-                timeLabel->setText(QString::number(i+1));
-
-
-                if(i%5 == 4) {
-                    achievementScoreLabel->setText(QString::number(sum));
-                }
-
-                updateLEDS(sum/(i+1));
-                updateBreathPacerBar();
-
-                x[i] = j;
-                y[i] = measuringDevice->getNextCoherentBPM();
-
-                myPlot->addGraph();
-                myPlot->graph(0)->setData(x, y);
-                myPlot->replot();
-
-                if(i % 63 == 0) {
-                    x.clear();
-                    y.clear();
-                    x.resize(101);
-                    y.resize(101);
-                    j = 0;
-                }
-                j += 1;
-
-                if(!inSession) {
-                    break;
-                }
-            }
-
-        }
-    }
-    else {
-        inSession = false;
-    }
-
-
-
-
-    //drawresults
-}
-
-
-void Device::updateLEDS(float avg) {
-
-    mw->findChild<QWidget*>(QString::fromStdString("widget_2"))->setStyleSheet("background: grey ");
-    mw->findChild<QWidget*>(QString::fromStdString("widget_3"))->setStyleSheet("background: grey ");
-    mw->findChild<QWidget*>(QString::fromStdString("widget_4"))->setStyleSheet("background: grey ");
-
-    float low;
-    float high;
-
-    if(challenger == "Beginner") {
-        low = 0.5;
-        high = 0.9;
-    }
-    else if(challenger == "Intermediate") {
-        low = 0.6;
-        high = 2.1;
-    }
-    else if(challenger == "Proficient") {
-        low = 1.8;
-        high = 4.0;
-    }
-    else {
-        low = 4.0;
-        high = 6.0;
-    }
-
-
-    if(avg < low) {
-        mw->findChild<QWidget*>(QString::fromStdString("widget_2"))->setStyleSheet("background: red ");
-    }
-    else if(avg > high) {
-        mw->findChild<QWidget*>(QString::fromStdString("widget_4"))->setStyleSheet("background: green ");
-    }
-    else {
-        mw->findChild<QWidget*>(QString::fromStdString("widget_3"))->setStyleSheet("background: blue ");
-    }
-}
-
-void Device::updateBreathPacerBar() {
-
-    if(breathLoc == breathPacer) {
-        breathIn = false;
-    }
-    else if(breathLoc == 0) {
-        breathIn = true;
-    }
-
-    if(breathIn) {
-        breathLoc += 1;
-    }
-    else {
-        breathLoc -= 1;
-    }
-
-    mw->findChild<QProgressBar*>(QString::fromStdString("progressBar"))->setValue((float(breathLoc)/float(breathPacer))*100);
 }
 
 void Device::ShowSummary(int num){
