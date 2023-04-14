@@ -10,12 +10,15 @@ using namespace std;
 #include <unistd.h>
 #include <QCoreApplication>
 #include "SessionManager.h"
+#include "heartmeasuringelectrodes.h"
 #include "QScrollArea"
 #include "QVBoxLayout"
 #include "QLabel"
 #include "QDateTime"
 #include "QPushButton"
 #include "QComboBox"
+#include "QProgressBar"
+#include "qcustomplot.h"
 class MainWindow;
 
 class Device
@@ -45,7 +48,9 @@ public:
     void ShowSummary(int);
     void SetupButtons();
     void updateLEDS(float);
+    void updateBreathPacerBar();
     void delay();
+    void runSession();
     int* stringToArray(char* str, int size);
 
 private:
@@ -61,6 +66,9 @@ private:
     bool isOn;
 
     int breathPacer;
+    int breathLoc;
+    bool breathIn;
+
     string challenger;
     bool inSession;
 
@@ -69,6 +77,10 @@ private:
     SessionHistory *history[MAX_HISTORY];
 
     SessionManager* sessionManager;
+
+    HeartMeasuringElectrodes* measuringDevice;
+
+    QVector<double> x, y;
 };
 
 #endif // DEVICE_H

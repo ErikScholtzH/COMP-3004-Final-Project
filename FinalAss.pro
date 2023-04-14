@@ -1,4 +1,4 @@
-QT       += core gui
+QT       += core gui printsupport
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -23,6 +23,7 @@ SOURCES += \
     heartmeasuringelectrodes.cpp \
     main.cpp \
     mainwindow.cpp \
+    qcustomplot.cpp \
     sessionhistory.cpp \
     user.cpp
 
@@ -33,6 +34,7 @@ HEADERS += \
     device.h \
     heartmeasuringelectrodes.h \
     mainwindow.h \
+    qcustomplot.h \
     sessionhistory.h \
     user.h
 

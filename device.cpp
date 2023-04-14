@@ -22,8 +22,14 @@ void Device::SetupVariables(){
     historySize = 0;
     challenger = "Beginner";
     inSession = false;
+    breathLoc = 0;
+    breathIn = true;
 
     sessionManager = new SessionManager();
+    measuringDevice = new HeartMeasuringElectrodes();
+
+    x.resize(101);
+    y.resize(101);
 }
 
 void Device::FindHistory(){
@@ -90,12 +96,12 @@ int Device::GetBatteryLevel(){
     return batteryLevel;
 }
 void Device::DecreaseBatteryLevel(){
-    batteryLevel -= 0.1f;
+    batteryLevel -= 0.5f;
     SetBatteryLevel();
 }
 
 void Device::IncreaseBatteryLevel(){
-    batteryLevel += 0.1f;
+    batteryLevel += 0.5f;
     SetBatteryLevel();
 }
 
@@ -199,7 +205,7 @@ void Device::UpButton(){
 }
 
 void Device::BackButton(){
-    if(!isOn) return;
+    if(!isOn || inSession) return;
 
     inSummary = false;
     menu = lastMenu;
@@ -236,7 +242,7 @@ void Device::BackButton(){
 }
 
 void Device::MenuButton(){
-    if(!isOn) return;
+    if(!isOn || inSession) return;
 
     inSummary = false;
     menu = 0;
@@ -289,6 +295,26 @@ void Device::SelectButton(){
             mw->findChild<QWidget*>(QString::fromStdString("widget_3"))->setStyleSheet("background: grey ");
             mw->findChild<QWidget*>(QString::fromStdString("widget_4"))->setStyleSheet("background: grey ");
 
+            mw->findChild<QLabel*>(QString::fromStdString("label_5"))->setText("000.000");
+            mw->findChild<QLabel*>(QString::fromStdString("label_6"))->setText("000.000");
+            mw->findChild<QLabel*>(QString::fromStdString("label_7"))->setText("000.000");
+
+            mw->findChild<QCustomPlot*>(QString::fromStdString("plot"))->xAxis->setRange(0, 64);
+            mw->findChild<QCustomPlot*>(QString::fromStdString("plot"))->yAxis->setRange(40, 100);
+
+            mw->findChild<QProgressBar*>(QString::fromStdString("progressBar"))->setValue(0);
+            x.clear();
+            y.clear();
+            x.resize(101);
+            y.resize(101);
+            mw->findChild<QCustomPlot*>(QString::fromStdString("plot"))->addGraph();
+            mw->findChild<QCustomPlot*>(QString::fromStdString("plot"))->graph(0)->setData(x, y);
+            mw->findChild<QCustomPlot*>(QString::fromStdString("plot"))->replot();
+
+            measuringDevice->reset();
+
+            breathLoc = 0;
+
         }else if (subMenu == 1){
             menu = 1;
             qw = mw->findChild<QWidget*>(QString::fromStdString("_1Settings"));
@@ -326,78 +352,7 @@ void Device::SelectButton(){
     }
     else if(menu == 2) {
 
-        if(!inSession) {
-
-            inSession = true;
-
-            string level = (mw->findChild<QComboBox*>(QString::fromStdString("comboBox"))->currentText()).toStdString();
-
-            QWidget* redOn = mw->findChild<QWidget*>(QString::fromStdString("widget_2"));
-            QWidget* blueOn = mw->findChild<QWidget*>(QString::fromStdString("widget_3"));
-            QWidget* greenOn = mw->findChild<QWidget*>(QString::fromStdString("widget_4"));
-
-            QLabel* coherenceScoreLabel = mw->findChild<QLabel*>(QString::fromStdString("label_5"));
-//            QLabel* timeLabel = mw->findChild<QLabel*>(QString::fromStdString("label_5"));
-
-            redOn->setStyleSheet("background: grey ");
-            blueOn->setStyleSheet("background: grey ");
-            greenOn->setStyleSheet("background: grey ");
-
-            cout << level << endl;
-
-            int coherentBPM[35] = {70, 75, 79, 80, 79, 75, 70, 65, 61, 60, 61, 65, 70, 75, 79, 80, 79, 75, 70, 65, 61, 60, 61, 65, 70, 75, 79, 80, 79, 75, 70, 65, 61, 60, 61};
-            float coherentScores[35] = {14.081, 14.829, 16.554, 17.399, 15.845, 15.777, 17.725, 16.472934586508173, 15.935926114090117, 14.900258192099465, 15.115566295646148, 16.26759823179791, 17.081257666005877, 14.821728441425501, 15.860332733140707, 15.836389979172596, 14.074859428654752, 14.147223012408118, 17.297047764697107, 14.733928776798555, 15.712365417337232, 14.414283728327843, 16.02099466374129, 15.846370583517548, 17.335415168745836, 15.778336567062163, 15.361505580278917, 16.076289112663266, 15.457338108019695, 17.43204522015678, 15.526684559643238, 16.22119603892945, 15.264051068420355, 15.73661848910545, 16.73229392368946};
-
-            int incohenrentBPM[35] = {65, 70, 68, 75, 82, 78, 60, 90, 95, 50, 100, 68, 72, 80, 70, 80, 72, 65, 90, 100, 68, 75, 95, 62, 78, 85, 70, 80, 72, 65, 90, 100, 68, 75, 95};
-            float incoherentScores[35] = {0.676, 0.791, 0.532, 0.934, 0.537, 0.984, 0.856, 0.944141690784161, 0.6769622722665572, 0.8650419337478217, 0.5699839310445969, 0.5934419670992245, 0.6693196420040145, 0.8998924687774668, 0.6476111590086364, 0.9062242264757781, 0.9864137777818425, 0.9874011863688554, 0.6881160338002256, 0.6625688002023829, 0.8766976518777016, 0.7111006983701928, 0.8670320304461671, 0.738515875587383, 0.9252620142403182, 0.9527205579636875, 0.9643325547992137, 0.8629243979902797, 0.9607750220316112, 0.797475755921756, 0.8533784841368448, 0.7170554247063467, 0.6048571687289822, 0.7934731865971133, 0.6226393238411937};
-
-
-
-            float sum = 0.0;
-
-            if(level == "Low") {
-
-                for(int i = 0; i < sizeof(incoherentScores)/sizeof(int); i++){
-                    delay();
-                    sum += incoherentScores[i];
-                    coherenceScoreLabel->setText(QString::number(sum/(i+1)));
-
-                    updateLEDS(sum/(i+1));
-
-                    if(!inSession) {
-                        break;
-                    }
-                }
-
-            }
-            else if(level == "Medium") {
-                sleep(1);
-                blueOn->setStyleSheet("background: blue ");
-            }
-            else {
-
-                for(int i = 0; i < sizeof(coherentScores)/sizeof(int); i++){
-                    delay();
-                    sum += coherentScores[i];
-                    coherenceScoreLabel->setText(QString::number(sum/(i+1)));
-
-                    updateLEDS(sum/(i+1));
-
-                    if(!inSession) {
-                        break;
-                    }
-                }
-
-            }
-        }
-        else {
-            inSession = false;
-        }
-
-
-
-
-        //drawresults
+        runSession();
 
 
     }else if(menu == 3){
@@ -461,11 +416,176 @@ void Device::DecreaseLevel(){
     else cout << "Couldnt find BP_Text" << endl;
 }
 
+
 void Device::delay() {
     QTime dieTime = QTime::currentTime().addSecs(1);
     while (QTime::currentTime() < dieTime)
         QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
 }
+
+void Device::runSession() {
+
+    if(!inSession) {
+
+        inSession = true;
+
+        string level = (mw->findChild<QComboBox*>(QString::fromStdString("comboBox"))->currentText()).toStdString();
+
+        QWidget* redOn = mw->findChild<QWidget*>(QString::fromStdString("widget_2"));
+        QWidget* blueOn = mw->findChild<QWidget*>(QString::fromStdString("widget_3"));
+        QWidget* greenOn = mw->findChild<QWidget*>(QString::fromStdString("widget_4"));
+
+        QLabel* coherenceScoreLabel = mw->findChild<QLabel*>(QString::fromStdString("label_5"));
+        QLabel* timeLabel = mw->findChild<QLabel*>(QString::fromStdString("label_6"));
+        QLabel* achievementScoreLabel = mw->findChild<QLabel*>(QString::fromStdString("label_7"));
+
+        QLabel* batteryLevel = mw->findChild<QLabel*>(QString::fromStdString("batteryPercent"));
+
+        cout << "here" << endl;
+
+
+
+        float val;
+        int j = 0;
+        float sum = 0.0;
+
+        QCustomPlot* myPlot = mw->findChild<QCustomPlot*>(QString::fromStdString("plot"));
+
+
+
+        if(level == "Low") {
+
+            for(int i = 0; i < 84; i++){
+                delay();
+                DecreaseBatteryLevel();
+
+                val = measuringDevice->getNextIncoherentScore();
+                sum += val;
+                coherenceScoreLabel->setText(QString::number(sum/(i+1)));
+                timeLabel->setText(QString::number(i+1));
+
+
+                if(i%5 == 4) {
+                    achievementScoreLabel->setText(QString::number(sum));
+                }
+
+                updateLEDS(sum/(i+1));
+                updateBreathPacerBar();
+
+                x[i] = j;
+                y[i] = measuringDevice->getNextIncoherentBPM();
+
+                myPlot->addGraph();
+                myPlot->graph(0)->setData(x, y);
+                myPlot->replot();
+
+                if(i % 63 == 0) {
+                    x.clear();
+                    y.clear();
+                    x.resize(101);
+                    y.resize(101);
+                    j = 0;
+                }
+                j += 1;
+
+                if(!inSession) {
+                    break;
+                }
+            }
+
+        }
+        else if(level == "Medium") {
+            for(int i = 0; i < 84; i++){
+                delay();
+                DecreaseBatteryLevel();
+
+                val = measuringDevice->getNextMidcoherentScore();
+                sum += val;
+                coherenceScoreLabel->setText(QString::number(sum/(i+1)));
+                timeLabel->setText(QString::number(i+1));
+
+
+                if(i%5 == 4) {
+                    achievementScoreLabel->setText(QString::number(sum));
+                }
+
+                updateLEDS(sum/(i+1));
+                updateBreathPacerBar();
+
+                x[i] = j;
+                y[i] = measuringDevice->getNextMidcoherentBPM();
+
+                myPlot->addGraph();
+                myPlot->graph(0)->setData(x, y);
+                myPlot->replot();
+
+                if(i % 63 == 0) {
+                    x.clear();
+                    y.clear();
+                    x.resize(101);
+                    y.resize(101);
+                    j = 0;
+                }
+                j += 1;
+
+                if(!inSession) {
+                    break;
+                }
+            }
+
+        }
+        else {
+
+            for(int i = 0; i < 84; i++){
+                delay();
+                DecreaseBatteryLevel();
+
+                val = measuringDevice->getNextCoherentScore();
+                sum += val;
+                coherenceScoreLabel->setText(QString::number(sum/(i+1)));
+                timeLabel->setText(QString::number(i+1));
+
+
+                if(i%5 == 4) {
+                    achievementScoreLabel->setText(QString::number(sum));
+                }
+
+                updateLEDS(sum/(i+1));
+                updateBreathPacerBar();
+
+                x[i] = j;
+                y[i] = measuringDevice->getNextCoherentBPM();
+
+                myPlot->addGraph();
+                myPlot->graph(0)->setData(x, y);
+                myPlot->replot();
+
+                if(i % 63 == 0) {
+                    x.clear();
+                    y.clear();
+                    x.resize(101);
+                    y.resize(101);
+                    j = 0;
+                }
+                j += 1;
+
+                if(!inSession) {
+                    break;
+                }
+            }
+
+        }
+    }
+    else {
+        inSession = false;
+    }
+
+
+
+
+    //drawresults
+}
+
 
 void Device::updateLEDS(float avg) {
 
@@ -473,15 +593,55 @@ void Device::updateLEDS(float avg) {
     mw->findChild<QWidget*>(QString::fromStdString("widget_3"))->setStyleSheet("background: grey ");
     mw->findChild<QWidget*>(QString::fromStdString("widget_4"))->setStyleSheet("background: grey ");
 
-    if(avg < 3) {
+    float low;
+    float high;
+
+    if(challenger == "Beginner") {
+        low = 0.5;
+        high = 0.9;
+    }
+    else if(challenger == "Intermediate") {
+        low = 0.6;
+        high = 2.1;
+    }
+    else if(challenger == "Proficient") {
+        low = 1.8;
+        high = 4.0;
+    }
+    else {
+        low = 4.0;
+        high = 6.0;
+    }
+
+
+    if(avg < low) {
         mw->findChild<QWidget*>(QString::fromStdString("widget_2"))->setStyleSheet("background: red ");
     }
-    else if(avg > 12) {
+    else if(avg > high) {
         mw->findChild<QWidget*>(QString::fromStdString("widget_4"))->setStyleSheet("background: green ");
     }
     else {
         mw->findChild<QWidget*>(QString::fromStdString("widget_3"))->setStyleSheet("background: blue ");
     }
+}
+
+void Device::updateBreathPacerBar() {
+
+    if(breathLoc == breathPacer) {
+        breathIn = false;
+    }
+    else if(breathLoc == 0) {
+        breathIn = true;
+    }
+
+    if(breathIn) {
+        breathLoc += 1;
+    }
+    else {
+        breathLoc -= 1;
+    }
+
+    mw->findChild<QProgressBar*>(QString::fromStdString("progressBar"))->setValue((float(breathLoc)/float(breathPacer))*100);
 }
 
 void Device::ShowSummary(int num){
