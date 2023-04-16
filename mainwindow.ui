@@ -912,25 +912,6 @@ background-color: red
         <string>Challenge Level </string>
        </property>
       </widget>
-      <widget class="QFrame" name="frame_2">
-       <property name="geometry">
-        <rect>
-         <x>40</x>
-         <y>170</y>
-         <width>241</width>
-         <height>81</height>
-        </rect>
-       </property>
-       <property name="styleSheet">
-        <string notr="true"/>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::StyledPanel</enum>
-       </property>
-       <property name="frameShadow">
-        <enum>QFrame::Raised</enum>
-       </property>
-      </widget>
       <widget class="QLabel" name="label_11">
        <property name="geometry">
         <rect>
@@ -1160,14 +1141,54 @@ background-color: red
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
        </property>
       </widget>
+      <widget class="QCustomPlot" name="widget_6" native="true">
+       <property name="geometry">
+        <rect>
+         <x>40</x>
+         <y>160</y>
+         <width>241</width>
+         <height>80</height>
+        </rect>
+       </property>
+      </widget>
      </widget>
     </widget>
+    <widget class="QWidget" name="_0Hist" native="true">
+     <property name="geometry">
+      <rect>
+       <x>275</x>
+       <y>5</y>
+       <width>100</width>
+       <height>30</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background:#94a6b5</string>
+     </property>
+     <widget class="QLabel" name="label_22">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>10</y>
+        <width>71</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">border:none</string>
+      </property>
+      <property name="text">
+       <string>Reset Data</string>
+      </property>
+     </widget>
+    </widget>
+    <zorder>_0Hist</zorder>
     <zorder>_2HVRScreen</zorder>
-    <zorder>__Overview</zorder>
     <zorder>_1Settings</zorder>
     <zorder>_0MainMenu</zorder>
-    <zorder>TopBar</zorder>
     <zorder>_3LogHistory</zorder>
+    <zorder>__Overview</zorder>
+    <zorder>TopBar</zorder>
     <zorder>OffScreen</zorder>
    </widget>
    <widget class="QLabel" name="Title">

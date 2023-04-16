@@ -5,6 +5,8 @@ using namespace std;
 #include <iostream>
 #include <fstream>
 #include <string.h>
+#include <QFile>
+#include <QString>
 
 #include "sessionhistory.h"
 
@@ -23,7 +25,8 @@ public:
     bool findSession(string fileName);
     void SaveToFile(SessionHistory* session, int index);
     SessionHistory* LoadFromFile(string fileName);
-    string arrayToString(int *arr);
+    string arrayToString(double *arr);
+    bool removeSession(string fileName);
 
 private:
     string name;
