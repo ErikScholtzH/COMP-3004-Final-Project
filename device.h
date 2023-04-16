@@ -6,7 +6,8 @@
 using namespace std;
 #include <iostream>
 #include <fstream>
-#include <time.h>
+#include <chrono>
+#include <ctime>
 #include <unistd.h>
 #include <QCoreApplication>
 #include "SessionManager.h"
@@ -52,6 +53,7 @@ public:
     void delay();
     void runSession();
     int* stringToArray(char* str, int size);
+    void resetData();
 
 private:
     float batteryLevel;

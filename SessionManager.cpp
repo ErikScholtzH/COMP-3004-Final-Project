@@ -15,7 +15,6 @@ bool SessionManager::findSession(string fileName){
 }
 
 SessionHistory* SessionManager::LoadFromFile(string fileName){
-
     fstream inFile;
     inFile.open(fileName, ios::in);
     if(inFile.is_open()){
@@ -28,23 +27,18 @@ SessionHistory* SessionManager::LoadFromFile(string fileName){
             count++;
         }
         inFile.close();
-        int arr[60];
+        double arr[64];
         count = 0;
-        for(int i = 0; i < sizeof(arr)/sizeof(int); i++){
-            string buffer = "";
-//            cout << params[7] << endl; I EDITD THIS OUT
-            for(int j = 0; j < strlen(params[7].c_str()); j++){
-                if(params[7][j] ==  ' '){
-                    arr[i] = stoi(buffer);
-//                    cout << arr[i] << endl;
-                    break;
-                }
-                else{
-                    buffer += params[7][j];
-                }
+        string buffer = "";
+        for(int i = 0; i < strlen(params[7].c_str()); i++){
+            if(params[7][i] ==  ' '){
+                arr[count] = atof(buffer.c_str());
+                count++;
+                buffer = "";
             }
-//            cout << count <<endl;
-            count++;
+            else{
+                buffer += string(1, params[7][i]);
+            }
         }
         return new SessionHistory(params[0], stoi(params[1]), stoi(params[2]), stoi(params[3]), stof(params[4]), stoi(params[5]), stoi(params[6]), arr, params[8], params[9]);
     }
@@ -70,12 +64,21 @@ void SessionManager::SaveToFile(SessionHistory* session, int index){
 }
 
 
-string SessionManager::arrayToString(int *arr) {
-    char str[256] = "";
+string SessionManager::arrayToString(double *arr) {
+    std::string str;
     for(int i = 0; i < MAX_POINTS; i++){
-//        cout << i << " : " << arr[i] << endl;
-        strcat(str, to_string(arr[i]).c_str());
-        strcat(str, " ");
+        str += std::to_string(arr[i]);
+        str += " ";
     }
     return str;
+}
+
+bool SessionManager::removeSession(string fileName){
+    QString filePath(QString::fromStdString(fileName));
+    QFile file(filePath);
+    if(file.exists()){
+        file.remove();
+        return true;
+    }
+    return false;
 }

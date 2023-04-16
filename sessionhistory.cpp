@@ -1,6 +1,6 @@
 #include "sessionhistory.h"
 
-SessionHistory::SessionHistory(string cl, int clt, int cmt, int cht, float ac, int tt, int as, int hrvp[], string d, string t)
+SessionHistory::SessionHistory(string cl, int clt, int cmt, int cht, float ac, int tt, int as, double hrvp[], string d, string t)
 {
 //    cout << "3: " <<hrvp[3] << "4: " <<hrvp[4] << "5: " <<hrvp[5] <<endl;
     challengeLevel = cl;
@@ -14,7 +14,7 @@ SessionHistory::SessionHistory(string cl, int clt, int cmt, int cht, float ac, i
 
     //new code
     int i;
-    for(i = 0; i < tt/5; i++){
+    for(i = 0; i < tt; i++){
         hrvPoints[i] = hrvp[i];
     }
     for(int j = i; j < MAX_POINTS; j++){
@@ -27,52 +27,52 @@ SessionHistory::SessionHistory(string cl, int clt, int cmt, int cht, float ac, i
     time = t;
 }
 
-string SessionHistory::GetChallengeLevel() const
+string SessionHistory::GetChallengeLevel()
 {
     return challengeLevel;
 }
 
-int SessionHistory::GetCoheranceLowTime() const
+int SessionHistory::GetCoheranceLowTime()
 {
     return coheranceLowTime;
 }
 
-int SessionHistory::GetCoheranceMedTime() const
+int SessionHistory::GetCoheranceMedTime()
 {
     return coheranceMedTime;
 }
 
-int SessionHistory::GetCoheranceHighTime() const
+int SessionHistory::GetCoheranceHighTime()
 {
     return coheranceHighTime;
 }
 
-float SessionHistory::GetAverageCoherance() const
+float SessionHistory::GetAverageCoherance()
 {
     return averageCoherance;
 }
 
-int SessionHistory::GetToalTime() const
+int SessionHistory::GetToalTime()
 {
     return toalTime;
 }
 
-int SessionHistory::GetAchievementScore() const
+int SessionHistory::GetAchievementScore()
 {
     return achievementScore;
 }
 
-int* SessionHistory::GetHrvPoints()
+double* SessionHistory::GetHrvPoints()
 {
     return hrvPoints;
 }
 
-string SessionHistory::GetDate() const
+string SessionHistory::GetDate()
 {
     return date;
 }
 
-string SessionHistory::GetTime() const
+string SessionHistory::GetTime()
 {
     return time;
 }

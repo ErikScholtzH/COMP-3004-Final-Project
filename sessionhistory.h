@@ -1,7 +1,7 @@
 #ifndef SESSIONHISTORY_H
 #define SESSIONHISTORY_H
 
-#define MAX_POINTS 60
+#define MAX_POINTS 64
 using namespace std;
 #include <iostream>
 #include <cstdio>
@@ -10,21 +10,20 @@ using namespace std;
 class SessionHistory
 {
 public:
-//    SessionHistory(string, int, int, int, float, int, int, string, string, string);
-    SessionHistory(string cl, int clt, int cmt, int cht, float ac, int tt, int as, int hrvp[], string d, string t);
+    SessionHistory(string cl, int clt, int cmt, int cht, float ac, int tt, int as, double hrvp[], string d, string t);
     friend ostream& operator <<(ostream& os, SessionHistory const & sh){
         return os << " challengeLevel: " << sh.challengeLevel << " coheranceLowTime: " << sh.coheranceLowTime << " coheranceMedTime: " << sh.coheranceMedTime << " coheranceHighTime: " << sh.coheranceHighTime << " averageCoherance: " << sh.averageCoherance << " toalTime: " << sh.toalTime << " achievementScore: " << sh.achievementScore << " date: " << sh.date << " time: " << sh.time << endl;
     }
-    string GetChallengeLevel() const;
-    int GetCoheranceLowTime() const;
-    int GetCoheranceMedTime() const;
-    int GetCoheranceHighTime() const;
-    float GetAverageCoherance() const;
-    int GetToalTime() const;
-    int GetAchievementScore() const;
-    int* GetHrvPoints();
-    string GetDate() const;
-    string GetTime() const;
+    string GetChallengeLevel();
+    int GetCoheranceLowTime();
+    int GetCoheranceMedTime();
+    int GetCoheranceHighTime();
+    float GetAverageCoherance();
+    int GetToalTime();
+    int GetAchievementScore();
+    double* GetHrvPoints();
+    string GetDate();
+    string GetTime();
     
 private:
     string challengeLevel;
@@ -34,7 +33,7 @@ private:
     float averageCoherance;
     int toalTime;
     int achievementScore;
-    int hrvPoints[MAX_POINTS];
+    double hrvPoints[MAX_POINTS];
     string date;
     string time;
 
