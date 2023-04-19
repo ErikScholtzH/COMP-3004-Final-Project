@@ -7,6 +7,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     SetupButtons();
+    srand(time(NULL));
 }
 
 MainWindow::~MainWindow()
@@ -15,6 +16,7 @@ MainWindow::~MainWindow()
     delete device;
 }
 
+//setup ui buttons
 void MainWindow::SetupButtons(){
     QPushButton *button = findChild<QPushButton*>(QString::fromStdString("PowerButton"));
     button->setIcon(QIcon(":/new/prefix1/Power.png"));
@@ -38,13 +40,17 @@ void MainWindow::SetupButtons(){
 
 }
 
+//starts the simulation
 void MainWindow::StartSim(){
     device = new Device(this);
 }
+
+//sets battery ui color to color
 void MainWindow::SetBatteryColor(string color){
     setStyleSheet("QProgressBar#BatteryVisual::chunk{background-color: " + QString::fromStdString(color) + "}");
 }
 
+//set ui battery level to batterylevel
 void MainWindow::SetBatteryLevel(int batteryLevel){
     QProgressBar *qpb = this->findChild<QProgressBar*>("BatteryVisual");
     if(qpb) qpb->setValue(batteryLevel);
@@ -55,13 +61,14 @@ void MainWindow::SetBatteryLevel(int batteryLevel){
     else cout << "Could not find batteryPercent" << endl;
 }
 
+//sets a specified button to a specified color
 void MainWindow::SetButtonColor(string color, string object){
     QWidget *qw = this->findChild<QWidget*>(QString::fromStdString(object));
     if(qw) qw->setStyleSheet("background-color: " + QString::fromStdString(color));
     else cout << "Could not find " << object << endl;
 }
 
-
+//All button release logic connected to device
 void MainWindow::on_UpButton_released()
 {
     if(!setup) return;

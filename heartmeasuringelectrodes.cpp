@@ -1,10 +1,12 @@
 #include "heartmeasuringelectrodes.h"
 
+//constructor
 HeartMeasuringElectrodes::HeartMeasuringElectrodes()
 {
 
 }
 
+//gets the next coherent score
 float HeartMeasuringElectrodes::getNextCoherentScore() {
 
     float returnVal;
@@ -17,6 +19,7 @@ float HeartMeasuringElectrodes::getNextCoherentScore() {
     return returnVal;
 }
 
+//get the next BPM
 float HeartMeasuringElectrodes::getNextCoherentBPM() {
 
     float returnVal;
@@ -29,7 +32,7 @@ float HeartMeasuringElectrodes::getNextCoherentBPM() {
     return returnVal;
 }
 
-
+//get next mid coherence score
 float HeartMeasuringElectrodes::getNextMidcoherentScore() {
 
     float returnVal;
@@ -42,6 +45,7 @@ float HeartMeasuringElectrodes::getNextMidcoherentScore() {
     return returnVal;
 }
 
+//get next mid coherent bpm
 float HeartMeasuringElectrodes::getNextMidcoherentBPM() {
 
     float returnVal;
@@ -54,7 +58,7 @@ float HeartMeasuringElectrodes::getNextMidcoherentBPM() {
     return returnVal;
 }
 
-
+//get next incoherent score
 float HeartMeasuringElectrodes::getNextIncoherentScore() {
 
     float returnVal;
@@ -67,6 +71,7 @@ float HeartMeasuringElectrodes::getNextIncoherentScore() {
     return returnVal;
 }
 
+//get next incoherent bpm
 float HeartMeasuringElectrodes::getNextIncoherentBPM() {
 
     float returnVal;
@@ -79,6 +84,7 @@ float HeartMeasuringElectrodes::getNextIncoherentBPM() {
     return returnVal;
 }
 
+//reset variables
 void HeartMeasuringElectrodes::reset() {
     coherentLoc = 0;
     midcoherentLoc = 0;

@@ -1,5 +1,6 @@
 #include "sessionhistory.h"
 
+//constructor
 SessionHistory::SessionHistory(string cl, int clt, int cmt, int cht, float ac, int tt, int as, double hrvp[], string d, string t)
 {
 //    cout << "3: " <<hrvp[3] << "4: " <<hrvp[4] << "5: " <<hrvp[5] <<endl;
@@ -27,6 +28,7 @@ SessionHistory::SessionHistory(string cl, int clt, int cmt, int cht, float ac, i
     time = t;
 }
 
+//getters and setters
 string SessionHistory::GetChallengeLevel()
 {
     return challengeLevel;

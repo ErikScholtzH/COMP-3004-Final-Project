@@ -1,7 +1,7 @@
 #include "device.h"
 #include "mainwindow.h"
-#include <QDebug>
 
+//constructor
 Device::Device(MainWindow *_mw)
 {
     mw = _mw;
@@ -11,6 +11,7 @@ Device::Device(MainWindow *_mw)
     FindHistory();
 }
 
+//sets up the variables
 void Device::SetupVariables(){
     inSummary = false;
     isOn = false;
@@ -32,6 +33,7 @@ void Device::SetupVariables(){
     y.resize(101);
 }
 
+//finds the user history
 void Device::FindHistory(){
     cout << "Loading sessions..." << endl;
     //setup initializer
@@ -88,9 +90,12 @@ void Device::FindHistory(){
     parent->show();
 }
 
+//returns if device is on
 bool Device::GetIsOn(){
     return isOn;
 }
+
+//turns on device
 void Device::TurnOn(){
     isOn = true;
     menu = 0;
@@ -108,25 +113,32 @@ void Device::TurnOn(){
     else cout << "Cant find OffScreen" << endl;
 }
 
+//turns off device
 void Device::TurnOff(){
     isOn = false;
     QWidget *qw = mw->findChild<QWidget*>(QString::fromStdString("OffScreen"));
     if(qw) qw->raise();
     else cout << "Cant find OffScreen" << endl;
 }
+
+//returns the battery level
 int Device::GetBatteryLevel(){
     return batteryLevel;
 }
+
+//decreases the battery level by 0.5
 void Device::DecreaseBatteryLevel(){
     batteryLevel -= 0.5f;
     SetBatteryLevel();
 }
 
+//increases the battery level by 0.5
 void Device::IncreaseBatteryLevel(){
     batteryLevel += 0.5f;
     SetBatteryLevel();
 }
 
+//changes the batery level colors
 void Device::SetBatteryLevel(){
     mw->SetBatteryLevel(batteryLevel);
     if(batteryLevel < 20.0f){
@@ -140,22 +152,14 @@ void Device::SetBatteryLevel(){
     }
 }
 
+//controls the logic of when the down button is pressed
 void Device::DownButton(){
     if(!isOn || inSummary) return;
     if(menu == 0){//Main Menu
-        if(subMenu == 2){
-            subMenu = 0;
-            mw->SetButtonColor("#3b6282", "MM_Button1");
-            mw->SetButtonColor("#94a6b5", "MM_Button3");
-        }else if(subMenu == 1){
-            subMenu = 2;
-            mw->SetButtonColor("#3b6282", "MM_Button3");
-            mw->SetButtonColor("#94a6b5", "MM_Button2");
-        }else{
-            subMenu = 1;
-            mw->SetButtonColor("#94a6b5", "MM_Button1");
-            mw->SetButtonColor("#3b6282", "MM_Button2");
-        }
+        mw->SetButtonColor("#94a6b5", "MM_Button" +to_string(subMenu+1));
+        subMenu++;
+        if(subMenu > 3) subMenu = 0;
+        mw->SetButtonColor("#3b6282", "MM_Button" +to_string(subMenu+1));
     }else if(menu == 1){//Settings Menu
         if(subMenu == 0){
             subMenu = 1;
@@ -179,25 +183,22 @@ void Device::DownButton(){
             parent->move(0, 0);
         else
             parent->move(0, 53 + (-53 * subMenu));
+    }else if(menu == 4){
+        if(!playingSnake)
+            PlaySnake();
+        dir = 2;
+        return;
     }
 }
 
+//controls the logic of when the up button is pressed
 void Device::UpButton(){
     if(!isOn || inSummary) return;
     if(menu == 0){
-        if(subMenu == 2){
-            subMenu = 1;
-            mw->SetButtonColor("#3b6282", "MM_Button2");
-            mw->SetButtonColor("#94a6b5", "MM_Button3");
-        }else if(subMenu == 1){
-            subMenu = 0;
-            mw->SetButtonColor("#3b6282", "MM_Button1");
-            mw->SetButtonColor("#94a6b5", "MM_Button2");
-        }else{
-            subMenu = 2;
-            mw->SetButtonColor("#94a6b5", "MM_Button1");
-            mw->SetButtonColor("#3b6282", "MM_Button3");
-        }
+        mw->SetButtonColor("#94a6b5", "MM_Button" +to_string(subMenu+1));
+        subMenu--;
+        if(subMenu < 0) subMenu = 3;
+        mw->SetButtonColor("#3b6282", "MM_Button" +to_string(subMenu+1));
     }else if(menu == 1){//Settings Menu
         if(subMenu == 0){
             subMenu = 1;
@@ -222,12 +223,18 @@ void Device::UpButton(){
         else
             parent->move(0, 53 + (-53 * subMenu));
 
+    }else if(menu == 4){
+        if(!playingSnake)
+            PlaySnake();
+        dir = 3;
+        return;
     }
 
 }
 
+//controls the logic of when the back button is pressed
 void Device::BackButton(){
-    if(!isOn || inSession) return;
+    if(!isOn || inSession || playingSnake) return;
 
     inSummary = false;
     menu = lastMenu;
@@ -236,12 +243,13 @@ void Device::BackButton(){
 
     mw->findChild<QWidget*>(QString::fromStdString("_0Hist"))->lower();
     mw->findChild<QWidget*>(QString::fromStdString("__Overview"))->lower();
-
+    mw->findChild<QWidget*>(QString::fromStdString("_4SnakeGame"))->lower();
     if(menu==0){//Main Menu
         qw = mw->findChild<QWidget*>(QString::fromStdString("_0MainMenu"));
         mw->SetButtonColor("#3b6282", "MM_Button1");
         mw->SetButtonColor("#94a6b5", "MM_Button2");
         mw->SetButtonColor("#94a6b5", "MM_Button3");
+        mw->SetButtonColor("#94a6b5", "MM_Button4");
      }else if(menu == 1){//Settings
         qw = mw->findChild<QWidget*>(QString::fromStdString("_1Settings"));
         mw->SetButtonColor("#94a6b5", "S_Button2");
@@ -259,13 +267,16 @@ void Device::BackButton(){
             mw->findChild<QWidget*>(QString::fromStdString("historyFrame"))->move(0, 0);
             mw->findChild<QWidget*>(QString::fromStdString("_0Hist"))->raise();
         }
-        qw->raise();
+    }else if (menu == 4){
+        qw = mw->findChild<QWidget*>(QString::fromStdString("_4SnakeGame"));
+        SetupSnake();
     }
     qw->raise();
 }
 
+//controls the logic of when the menu button is pressed
 void Device::MenuButton(){
-    if(!isOn || inSession) return;
+    if(!isOn || inSession || playingSnake) return;
 
     inSummary = false;
     menu = 0;
@@ -274,16 +285,26 @@ void Device::MenuButton(){
     mw->SetButtonColor("#3b6282", "MM_Button1");
     mw->SetButtonColor("#94a6b5", "MM_Button2");
     mw->SetButtonColor("#94a6b5", "MM_Button3");
-
+    mw->SetButtonColor("#94a6b5", "MM_Button4");
 
     mw->findChild<QWidget*>(QString::fromStdString("_0MainMenu"))->raise();
     mw->findChild<QWidget*>(QString::fromStdString("__Overview"))->lower();
     mw->findChild<QWidget*>(QString::fromStdString("_0Hist"))->lower();
+    mw->findChild<QWidget*>(QString::fromStdString("_4SnakeGame"))->lower();
 }
 
-
+//controls the logic of when the right button is pressed
 void Device::IncreaseButton(){
     if(!isOn || inSummary) return;
+
+    if(menu == 4){
+        if(!playingSnake)
+            PlaySnake();
+        dir = 0;
+        return;
+    }
+
+
     if(menu==1){
         if(subMenu == 0){
             IncreaseDifficulty();
@@ -293,8 +314,17 @@ void Device::IncreaseButton(){
     }
 }
 
+//controls the logic of when the down button is pressed
 void Device::DecreaseButton(){
     if(!isOn || inSummary) return;
+
+    if(menu == 4){
+        if(!playingSnake)
+            PlaySnake();
+        dir = 1;
+        return;
+    }
+
     if(menu==1){
         if(subMenu == 0){
             DecreaseDifficulty();
@@ -304,6 +334,7 @@ void Device::DecreaseButton(){
     }
 }
 
+//controls the logic of when the select button is pressed
 void Device::SelectButton(){
     if(!isOn || inSummary) return;
     if(menu==0){
@@ -362,6 +393,12 @@ void Device::SelectButton(){
             }
             qw->raise();
             subMenu = 1;
+        }else{
+            SetupSnake();
+            menu = 4;
+            subMenu = 0;
+            qw = mw->findChild<QWidget*>(QString::fromStdString("_4SnakeGame"));
+            qw->raise();
         }
     }
     else if(menu == 2) {
@@ -376,9 +413,14 @@ void Device::SelectButton(){
                 ShowSummary(subMenu-1);
             }
         }
+    }else if (menu == 4){
+        if(playingSnake) return;
+        cout << "Playing Snake" << endl;
+        PlaySnake();
     }
 }
 
+//increase the difficulty
 void Device::IncreaseDifficulty(){
     if(!isOn || inSummary) return;
     if(challenger == "Beginner"){
@@ -396,6 +438,7 @@ void Device::IncreaseDifficulty(){
     else cout << "Couldnt find CL_Text" << endl;
 }
 
+//decrease the difficulty
 void Device::DecreaseDifficulty(){
     if(!isOn || inSummary) return;
     if(challenger == "Beginner"){
@@ -413,8 +456,10 @@ void Device::DecreaseDifficulty(){
     else cout << "Couldnt find CL_Text" << endl;
 }
 
+//increase the level
 void Device::IncreaseLevel(){
     if(!isOn || inSummary) return;
+
     if(breathPacer == 30) breathPacer = 1;
     else breathPacer++;
 
@@ -423,8 +468,10 @@ void Device::IncreaseLevel(){
     else cout << "Couldnt find BP_Text" << endl;
 }
 
+//decrease the level
 void Device::DecreaseLevel(){
     if(!isOn || inSummary) return;
+
     if(breathPacer == 1) breathPacer = 30;
     else breathPacer--;
 
@@ -434,12 +481,14 @@ void Device::DecreaseLevel(){
 }
 
 
-void Device::delay() {
-    QTime dieTime = QTime::currentTime().addSecs(1);
+//adds a delay of time in seconds
+void Device::delay(float time) {
+    QTime dieTime = QTime::currentTime().addMSecs(time * 1000.0);
     while (QTime::currentTime() < dieTime)
         QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
 }
 
+//Runs the simulation
 void Device::runSession() {
     cout << "Starting session..." << endl;
     int PercentInGoodC = 0;
@@ -450,15 +499,15 @@ void Device::runSession() {
         inSession = true;
         string level = (mw->findChild<QComboBox*>(QString::fromStdString("comboBox"))->currentText()).toStdString();
 
-        QWidget* redOn = mw->findChild<QWidget*>(QString::fromStdString("widget_2"));
-        QWidget* blueOn = mw->findChild<QWidget*>(QString::fromStdString("widget_3"));
-        QWidget* greenOn = mw->findChild<QWidget*>(QString::fromStdString("widget_4"));
+//        QWidget* redOn = mw->findChild<QWidget*>(QString::fromStdString("widget_2"));
+//        QWidget* blueOn = mw->findChild<QWidget*>(QString::fromStdString("widget_3"));
+//        QWidget* greenOn = mw->findChild<QWidget*>(QString::fromStdString("widget_4"));
 
         QLabel* coherenceScoreLabel = mw->findChild<QLabel*>(QString::fromStdString("label_5"));
         QLabel* timeLabel = mw->findChild<QLabel*>(QString::fromStdString("label_6"));
         QLabel* achievementScoreLabel = mw->findChild<QLabel*>(QString::fromStdString("label_7"));
 
-        QLabel* batteryLevel = mw->findChild<QLabel*>(QString::fromStdString("batteryPercent"));
+//        QLabel* batteryLevel = mw->findChild<QLabel*>(QString::fromStdString("batteryPercent"));
 
         float val;
         int j = 0;
@@ -468,7 +517,7 @@ void Device::runSession() {
 
         if(level == "Low") {
             for(int i = 0; i < 84; i++){
-                delay();
+                delay(1);
                 DecreaseBatteryLevel();
 
                 val = measuringDevice->getNextIncoherentScore();
@@ -508,7 +557,7 @@ void Device::runSession() {
         }
         else if(level == "Medium") {
             for(int i = 0; i < 84; i++){
-                delay();
+                delay(1);
                 DecreaseBatteryLevel();
 
                 val = measuringDevice->getNextMidcoherentScore();
@@ -548,7 +597,7 @@ void Device::runSession() {
         }
         else {
             for(int i = 0; i < 84; i++){
-                delay();
+                delay(1);
                 DecreaseBatteryLevel();
 
                 val = measuringDevice->getNextCoherentScore();
@@ -629,7 +678,7 @@ void Device::runSession() {
 
 }
 
-
+//updates the LEDs
 void Device::updateLEDS(float avg) {
 
     mw->findChild<QWidget*>(QString::fromStdString("widget_2"))->setStyleSheet("background: grey ");
@@ -668,6 +717,7 @@ void Device::updateLEDS(float avg) {
     }
 }
 
+//updates the breath pacer bar
 void Device::updateBreathPacerBar() {
 
     if(breathLoc == breathPacer) {
@@ -687,6 +737,7 @@ void Device::updateBreathPacerBar() {
     mw->findChild<QProgressBar*>(QString::fromStdString("progressBar"))->setValue((float(breathLoc)/float(breathPacer))*100);
 }
 
+//show a summary of the stats of user
 void Device::ShowSummary(int num){
     inSummary = true;
     if(historySize < num) cout << "Dumb dumb alert, somebody is begging for a stack overflow";
@@ -724,10 +775,124 @@ void Device::ShowSummary(int num){
     mw->findChild<QWidget*>(QString::fromStdString("__Overview"))->raise();
 }
 
+//when reset but is hit, reset the user data and delte the files
 void Device::resetData(){
     for(int i = 0; i < historySize; i++){
         string fileName = "./data" + to_string(i) + ".txt";
         sessionManager->removeSession(fileName);
     }
     historySize = 0;
+}
+
+//setup/cleanup the snake game
+void Device::SetupSnake(){
+    for(int i = 0; i < snakeScore; i++){
+        delete snakeBody[i];
+        snakeBody[i] = NULL;
+    }
+    mw->findChild<QWidget*>(QString::fromStdString("Snake"))->move(190, 120);
+    snakeAlive = true;
+    snakePosx = 190;
+    snakePosy = 120;
+    snakeScore = 0;
+
+    MoveFood();
+    dir = 0;
+    mw->findChild<QLabel*>(QString::fromStdString("StartText"))->setVisible(true);
+    mw->findChild<QLabel*>(QString::fromStdString("StartText"))->setText("Press any Key to start");
+}
+
+//move snake food to randome place inside play area
+void Device::MoveFood(){
+    foodPosx = ((rand() % 341) + 20) + 10 / 2;
+    foodPosx -= foodPosx % 10;
+
+    foodPosy = ((rand() % 201) + 20) + 10 / 2;
+    foodPosy -= foodPosy % 10;
+
+    mw->findChild<QWidget*>(QString::fromStdString("Food"))->move(foodPosx, foodPosy);
+}
+
+//Function to control snake game logic and control imputs
+void Device::PlaySnake(){
+    playingSnake = true;
+    mw->findChild<QLabel*>(QString::fromStdString("Score"))->setVisible(true);
+    mw->findChild<QLabel*>(QString::fromStdString("StartText"))->setVisible(false);
+    while(snakeAlive){
+
+        int lastPosX = snakePosx;
+        int lastPosY = snakePosy;
+
+        if(dir <= 1)
+            snakePosx += 10 * (dir == 1 ? - 1 : 1);
+        else
+            snakePosy += 10 * (dir == 3 ? - 1 : 1);
+
+        mw->findChild<QWidget*>(QString::fromStdString("Snake"))->move(snakePosx, snakePosy);
+
+        for(int i = snakeScore-1; i > 0; --i){
+           snakeBody[i]->move(snakeBody[i-1]->pos());
+        }
+        if(snakeBody[0] != NULL) snakeBody[0]->move(lastPosX, lastPosY);
+
+        for(int i = 0; i < snakeScore; i++){
+            if(snakeBody[i]->pos() == mw->findChild<QWidget*>(QString::fromStdString("Snake"))->pos()){
+                snakeAlive = false;
+                break;
+            }
+        }
+
+        if(snakePosx > 370 || snakePosx < 0 || snakePosy > 230 || snakePosy < 0)
+            snakeAlive = false;
+        else if(foodPosx == snakePosx && foodPosy == snakePosy){
+            MoveFood();
+            AddToBody();
+            mw->findChild<QLabel*>(QString::fromStdString("Score"))->setText(QString::fromStdString("Score : " + to_string(snakeScore)));
+        }
+
+        delay(0.25 - (snakeScore * 0.005));
+    }
+    mw->findChild<QLabel*>(QString::fromStdString("Score"))->setVisible(false);
+    mw->findChild<QLabel*>(QString::fromStdString("StartText"))->setVisible(true);
+    mw->findChild<QLabel*>(QString::fromStdString("StartText"))->setText(QString::fromStdString("Game Over\n Score : " + to_string(snakeScore)));
+    playingSnake = false;
+}
+
+//add 1 block to the snake body
+void Device::AddToBody(){
+    QWidget* snakeHead = mw->findChild<QWidget*>(QString::fromStdString("Snake"));
+    QWidget* newBody = new QWidget(mw->findChild<QWidget*>(QString::fromStdString("_4SnakeGame")));
+    newBody->setFixedSize(10, 10);
+    newBody->setStyleSheet(QString::fromStdString("border:none;background:red"));
+    newBody->setObjectName(QString::fromStdString("_SnakeBody"+to_string(snakeScore)));
+    if(snakeScore == 0){//just the head
+        if(dir <= 1)
+            newBody->move(snakeHead->pos().x() - (10 * (dir == 1 ? -1 : 1)), snakeHead->pos().y());
+        else
+            newBody->move(snakeHead->pos().x(), snakeHead->pos().y() - 10 * (dir == 3 ? -1 : 1));
+    }
+    else if(snakeScore == 1){//just head and 1 tail at position 0
+        if(snakeHead->pos().x() > snakeBody[0]->pos().x())
+            newBody->move(snakeBody[0]->pos().x() - 10, snakeBody[0]->pos().y());
+        else if(snakeHead->pos().x() < snakeBody[0]->pos().x())
+            newBody->move(snakeBody[0]->pos().x() + 10, snakeBody[0]->pos().y());
+        else if(snakeHead->pos().y() > snakeBody[0]->pos().y())
+            newBody->move(snakeBody[0]->pos().x(), snakeBody[0]->pos().y() - 10);
+        else if(snakeHead->pos().y() > snakeBody[0]->pos().y())
+            newBody->move(snakeBody[0]->pos().x(), snakeBody[0]->pos().y() + 10);
+    }else{//at least body at 0 and 1, score is at least 2
+        if(snakeBody[snakeScore-1]->pos().x() > snakeBody[snakeScore-2]->pos().x())
+            newBody->move(snakeBody[snakeScore-1]->pos().x() - 10, snakeBody[snakeScore-1]->pos().y());
+        else if(snakeBody[snakeScore-1]->pos().x() < snakeBody[snakeScore-2]->pos().x())
+            newBody->move(snakeBody[snakeScore-1]->pos().x() + 10, snakeBody[snakeScore-1]->pos().y());
+        else if(snakeBody[snakeScore-1]->pos().y() > snakeBody[snakeScore-2]->pos().y())
+            newBody->move(snakeBody[snakeScore-1]->pos().x(), snakeBody[snakeScore-1]->pos().y() + 10);
+        else if(snakeBody[snakeScore-1]->pos().y() < snakeBody[snakeScore-2]->pos().y())
+            newBody->move(snakeBody[snakeScore-1]->pos().x(), snakeBody[snakeScore-1]->pos().y() - 10);
+    }
+
+    snakeBody[snakeScore] = newBody;
+    snakeScore++;
+
+    newBody->show();
 }

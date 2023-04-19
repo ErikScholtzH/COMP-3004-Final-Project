@@ -2,6 +2,7 @@
 #define DEVICE_H
 
 #define MAX_HISTORY 64
+#define MAX_LENGTH 512
 
 using namespace std;
 #include <iostream>
@@ -20,6 +21,7 @@ using namespace std;
 #include "QComboBox"
 #include "QProgressBar"
 #include "qcustomplot.h"
+
 class MainWindow;
 
 class Device
@@ -50,10 +52,14 @@ public:
     void SetupButtons();
     void updateLEDS(float);
     void updateBreathPacerBar();
-    void delay();
+    void delay(float val);
     void runSession();
     int* stringToArray(char* str, int size);
     void resetData();
+    void SetupSnake();
+    void PlaySnake();
+    void MoveFood();
+    void AddToBody();
 
 private:
     float batteryLevel;
@@ -83,6 +89,17 @@ private:
     HeartMeasuringElectrodes* measuringDevice;
 
     QVector<double> x, y;
+
+    int snakePosx;
+    int snakePosy;
+    int foodPosx;
+    int foodPosy;
+
+    int snakeScore;
+    bool playingSnake;
+    bool snakeAlive;
+    int dir; //0 - right, 1 - left, 2 - up, 3 - down
+    QWidget *snakeBody[MAX_LENGTH];
 };
 
 #endif // DEVICE_H
