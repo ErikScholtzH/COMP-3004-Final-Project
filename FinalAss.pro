@@ -17,26 +17,20 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     SessionManager.cpp \
-    breathpacemeter.cpp \
-    coherenceled.cpp \
     device.cpp \
     heartmeasuringelectrodes.cpp \
     main.cpp \
     mainwindow.cpp \
     qcustomplot.cpp \
-    sessionhistory.cpp \
-    user.cpp
+    sessionhistory.cpp
 
 HEADERS += \
     SessionManager.h \
-    breathpacemeter.h \
-    coherenceled.h \
     device.h \
     heartmeasuringelectrodes.h \
     mainwindow.h \
     qcustomplot.h \
-    sessionhistory.h \
-    user.h
+    sessionhistory.h
 
 FORMS += \
     mainwindow.ui

@@ -1,11 +1,13 @@
 #include "SessionManager.h"
 
+//constructor
 SessionManager::SessionManager()
 {
 //    SaveToFile();
 //    LoadFromFile();
 }
 
+//find a session, return true if found
 bool SessionManager::findSession(string fileName){
     if (FILE *file = fopen(fileName.c_str(), "r")){
         fclose(file);
@@ -14,6 +16,7 @@ bool SessionManager::findSession(string fileName){
     return false;
 }
 
+//load filename from folder
 SessionHistory* SessionManager::LoadFromFile(string fileName){
     fstream inFile;
     inFile.open(fileName, ios::in);
@@ -44,6 +47,7 @@ SessionHistory* SessionManager::LoadFromFile(string fileName){
     }
 }
 
+//save given data to a file
 void SessionManager::SaveToFile(SessionHistory* session, int index){
     cout << "Saving session..." << endl;
     ofstream outFile("data" + to_string(index) + ".txt");
@@ -63,7 +67,7 @@ void SessionManager::SaveToFile(SessionHistory* session, int index){
     outFile.close();
 }
 
-
+//converts array to a string
 string SessionManager::arrayToString(double *arr) {
     std::string str;
     for(int i = 0; i < MAX_POINTS; i++){
@@ -73,6 +77,7 @@ string SessionManager::arrayToString(double *arr) {
     return str;
 }
 
+//converts a string to an array
 bool SessionManager::removeSession(string fileName){
     QString filePath(QString::fromStdString(fileName));
     QFile file(filePath);
