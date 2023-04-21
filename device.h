@@ -32,6 +32,7 @@ public:
     int GetBatteryLevel();
     void DecreaseBatteryLevel();
     void IncreaseBatteryLevel();
+    void fullCharge();
     void UpButton();
     void DownButton();
     void IncreaseButton();

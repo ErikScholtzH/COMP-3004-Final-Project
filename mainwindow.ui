@@ -1511,19 +1511,6 @@ To Start</string>
       <string>Battery Level</string>
      </property>
     </widget>
-    <widget class="QSpinBox" name="PowerBox">
-     <property name="geometry">
-      <rect>
-       <x>674</x>
-       <y>20</y>
-       <width>81</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">color: white</string>
-     </property>
-    </widget>
     <widget class="QLabel" name="label_21">
      <property name="geometry">
       <rect>
@@ -1689,6 +1676,137 @@ To Start</string>
        <string>Low</string>
       </property>
      </item>
+    </widget>
+    <widget class="QPushButton" name="pushButton">
+     <property name="geometry">
+      <rect>
+       <x>640</x>
+       <y>30</y>
+       <width>111</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="palette">
+      <palette>
+       <active>
+        <colorrole role="Button">
+         <brush brushstyle="SolidPattern">
+          <color alpha="153">
+           <red>38</red>
+           <green>36</green>
+           <blue>39</blue>
+          </color>
+         </brush>
+        </colorrole>
+        <colorrole role="ButtonText">
+         <brush brushstyle="SolidPattern">
+          <color alpha="255">
+           <red>255</red>
+           <green>255</green>
+           <blue>255</blue>
+          </color>
+         </brush>
+        </colorrole>
+        <colorrole role="Base">
+         <brush brushstyle="SolidPattern">
+          <color alpha="153">
+           <red>38</red>
+           <green>36</green>
+           <blue>39</blue>
+          </color>
+         </brush>
+        </colorrole>
+        <colorrole role="Window">
+         <brush brushstyle="SolidPattern">
+          <color alpha="153">
+           <red>38</red>
+           <green>36</green>
+           <blue>39</blue>
+          </color>
+         </brush>
+        </colorrole>
+       </active>
+       <inactive>
+        <colorrole role="Button">
+         <brush brushstyle="SolidPattern">
+          <color alpha="153">
+           <red>38</red>
+           <green>36</green>
+           <blue>39</blue>
+          </color>
+         </brush>
+        </colorrole>
+        <colorrole role="ButtonText">
+         <brush brushstyle="SolidPattern">
+          <color alpha="255">
+           <red>255</red>
+           <green>255</green>
+           <blue>255</blue>
+          </color>
+         </brush>
+        </colorrole>
+        <colorrole role="Base">
+         <brush brushstyle="SolidPattern">
+          <color alpha="153">
+           <red>38</red>
+           <green>36</green>
+           <blue>39</blue>
+          </color>
+         </brush>
+        </colorrole>
+        <colorrole role="Window">
+         <brush brushstyle="SolidPattern">
+          <color alpha="153">
+           <red>38</red>
+           <green>36</green>
+           <blue>39</blue>
+          </color>
+         </brush>
+        </colorrole>
+       </inactive>
+       <disabled>
+        <colorrole role="Button">
+         <brush brushstyle="SolidPattern">
+          <color alpha="153">
+           <red>38</red>
+           <green>36</green>
+           <blue>39</blue>
+          </color>
+         </brush>
+        </colorrole>
+        <colorrole role="ButtonText">
+         <brush brushstyle="SolidPattern">
+          <color alpha="255">
+           <red>190</red>
+           <green>190</green>
+           <blue>190</blue>
+          </color>
+         </brush>
+        </colorrole>
+        <colorrole role="Base">
+         <brush brushstyle="SolidPattern">
+          <color alpha="153">
+           <red>38</red>
+           <green>36</green>
+           <blue>39</blue>
+          </color>
+         </brush>
+        </colorrole>
+        <colorrole role="Window">
+         <brush brushstyle="SolidPattern">
+          <color alpha="153">
+           <red>38</red>
+           <green>36</green>
+           <blue>39</blue>
+          </color>
+         </brush>
+        </colorrole>
+       </disabled>
+      </palette>
+     </property>
+     <property name="text">
+      <string>CHARGE</string>
+     </property>
     </widget>
    </widget>
    <widget class="QLabel" name="label_15">

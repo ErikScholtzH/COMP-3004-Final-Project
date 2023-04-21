@@ -15,8 +15,10 @@ SessionHistory::SessionHistory(string cl, int clt, int cmt, int cht, float ac, i
 
     //new code
     int i;
-    for(i = 0; i < tt; i++){
-        hrvPoints[i] = hrvp[i];
+    int counter = tt / 64 * 64;
+    for(i = 0; i < tt % 64; i++){
+        hrvPoints[i] = hrvp[counter];
+        counter++;
     }
     for(int j = i; j < MAX_POINTS; j++){
         hrvPoints[j] = -1;

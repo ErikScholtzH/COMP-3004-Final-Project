@@ -120,3 +120,8 @@ void MainWindow::on_MenuButton_released()
     if(!setup) return;
     device->MenuButton();
 }
+
+void MainWindow::on_pushButton_released()
+{
+    device->fullCharge();
+}

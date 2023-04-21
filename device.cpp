@@ -138,6 +138,11 @@ void Device::IncreaseBatteryLevel(){
     SetBatteryLevel();
 }
 
+void Device::fullCharge() {
+    batteryLevel = 100.0f;
+    SetBatteryLevel();
+}
+
 //changes the batery level colors
 void Device::SetBatteryLevel(){
     mw->SetBatteryLevel(batteryLevel);
@@ -671,6 +676,7 @@ void Device::runSession() {
         cout << "Low : " << PercentInBadC << endl;
         history[historySize] = new SessionHistory(challenger, PercentInBadC, PercentInMedC, PercentInGoodC, coheranceScore, totalTime, achievementScore, y.data(), date, time);
         sessionManager->SaveToFile(history[historySize], historySize);
+        ShowSummary(historySize);
         historySize++;
         inSession = false;
     }
@@ -759,12 +765,17 @@ void Device::ShowSummary(int num){
     yGraph.resize(101);
     double* points = history[num]->GetHrvPoints();
     for(int i = 0; i < MAX_POINTS; i++){
-        if(i < history[num]->GetToalTime()){
+        if(i < history[num]->GetToalTime()%MAX_POINTS){
             xGraph[i] = i;
             yGraph[i] = points[i];
+
             continue;
         }
         break;
+    }
+
+    for(int i = 0; i < sizeof(points); i++) {
+        cout << points[i] << endl;
     }
 
     myPlot->addGraph();
