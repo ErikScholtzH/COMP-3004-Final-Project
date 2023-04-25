@@ -15,7 +15,7 @@ Device::Device(MainWindow *_mw)
 void Device::SetupVariables(){
     inSummary = false;
     isOn = false;
-    batteryLevel = 70;
+    batteryLevel = 5;
     breathPacer = 10;
     menu = 0;
     subMenu = 0;
@@ -29,8 +29,8 @@ void Device::SetupVariables(){
     sessionManager = new SessionManager();
     measuringDevice = new HeartMeasuringElectrodes();
 
-    x.resize(101);
-    y.resize(101);
+    x.resize(500);
+    y.resize(500);
 }
 
 //finds the user history
@@ -97,20 +97,23 @@ bool Device::GetIsOn(){
 
 //turns on device
 void Device::TurnOn(){
-    isOn = true;
-    menu = 0;
-    subMenu = 0;
-    QWidget *qw = mw->findChild<QWidget*>(QString::fromStdString("_0MainMenu"));
-    if(qw) qw->raise();
-    else cout << "Cant find MainMenu" << endl;
-    mw->SetButtonColor("#3b6282", "MM_Button1");
-    mw->SetButtonColor("#94a6b5", "MM_Button2");
-    mw->SetButtonColor("#94a6b5", "MM_Button3");
+
+    if(GetBatteryLevel() != 0) {
+        isOn = true;
+        menu = 0;
+        subMenu = 0;
+        QWidget *qw = mw->findChild<QWidget*>(QString::fromStdString("_0MainMenu"));
+        if(qw) qw->raise();
+        else cout << "Cant find MainMenu" << endl;
+        mw->SetButtonColor("#3b6282", "MM_Button1");
+        mw->SetButtonColor("#94a6b5", "MM_Button2");
+        mw->SetButtonColor("#94a6b5", "MM_Button3");
 
 
-    qw = mw->findChild<QWidget*>(QString::fromStdString("OffScreen"));
-    if(qw) qw->lower();
-    else cout << "Cant find OffScreen" << endl;
+        qw = mw->findChild<QWidget*>(QString::fromStdString("OffScreen"));
+        if(qw) qw->lower();
+        else cout << "Cant find OffScreen" << endl;
+    }
 }
 
 //turns off device
@@ -364,8 +367,8 @@ void Device::SelectButton(){
             mw->findChild<QProgressBar*>(QString::fromStdString("progressBar"))->setValue(0);
             x.clear();
             y.clear();
-            x.resize(101);
-            y.resize(101);
+            x.resize(500);
+            y.resize(500);
             mw->findChild<QCustomPlot*>(QString::fromStdString("plot"))->addGraph();
             mw->findChild<QCustomPlot*>(QString::fromStdString("plot"))->graph(0)->setData(x, y);
             mw->findChild<QCustomPlot*>(QString::fromStdString("plot"))->replot();
@@ -525,6 +528,11 @@ void Device::runSession() {
                 delay(1);
                 DecreaseBatteryLevel();
 
+                if(GetBatteryLevel() == 0) {
+                    inSession = false;
+                    TurnOff();
+                }
+
                 val = measuringDevice->getNextIncoherentScore();
                 sum += val;
                 coherenceScoreLabel->setText(QString::number(sum/(i+1)));
@@ -548,8 +556,8 @@ void Device::runSession() {
                 if(i % 63 == 0) {
                     x.clear();
                     y.clear();
-                    x.resize(101);
-                    y.resize(101);
+                    x.resize(500);
+                    y.resize(500);
                     j = 0;
                 }
                 j += 1;
@@ -564,6 +572,11 @@ void Device::runSession() {
             for(int i = 0; i < 84; i++){
                 delay(1);
                 DecreaseBatteryLevel();
+
+                if(GetBatteryLevel() == 0) {
+                    inSession = false;
+                    TurnOff();
+                }
 
                 val = measuringDevice->getNextMidcoherentScore();
                 sum += val;
@@ -588,8 +601,8 @@ void Device::runSession() {
                 if(i % 63 == 0) {
                     x.clear();
                     y.clear();
-                    x.resize(101);
-                    y.resize(101);
+                    x.resize(500);
+                    y.resize(500);
                     j = 0;
                 }
                 j += 1;
@@ -604,6 +617,11 @@ void Device::runSession() {
             for(int i = 0; i < 84; i++){
                 delay(1);
                 DecreaseBatteryLevel();
+
+                if(GetBatteryLevel() == 0) {
+                    inSession = false;
+                    TurnOff();
+                }
 
                 val = measuringDevice->getNextCoherentScore();
                 sum += val;
@@ -628,8 +646,8 @@ void Device::runSession() {
                 if(i % 63 == 0) {
                     x.clear();
                     y.clear();
-                    x.resize(101);
-                    y.resize(101);
+                    x.resize(500);
+                    y.resize(500);
                     j = 0;
                 }
                 j += 1;
@@ -761,8 +779,8 @@ void Device::ShowSummary(int num){
     myPlot->xAxis->setRange(0, 64);
     myPlot->yAxis->setRange(40, 100);
     QVector<double> xGraph, yGraph;
-    xGraph.resize(101);
-    yGraph.resize(101);
+    xGraph.resize(500);
+    yGraph.resize(500);
     double* points = history[num]->GetHrvPoints();
     for(int i = 0; i < MAX_POINTS; i++){
         if(i < history[num]->GetToalTime()%MAX_POINTS){
